@@ -47,17 +47,15 @@ export default function Container() {
         </GridItem>
 
         <GridItem row={2} colSpan={3}>
-          <Flex
-            h="100%"
-            justifyContent="center"
-            alignItems="end"
-            flexDirection="column"
-          >
-            <Text fontSize="5xl" fontWeight="thin">
+          <Flex h="100%" justifyContent="center" flexDirection="column">
+            <Text fontSize="5xl" fontWeight="thin" textAlign="right">
               Welcome to nicepfp.art
             </Text>
-            <Text fontSize="md" fontWeight="light">
+            <Text fontSize="md" fontWeight="light" textAlign="right">
               I needed a nice profile picture for my Twitter, so I made this
+            </Text>
+            <Text fontSize="md" fontWeight="normal" textAlign="right">
+              The perfect machine learning pfp NFTs.
             </Text>
           </Flex>
         </GridItem>

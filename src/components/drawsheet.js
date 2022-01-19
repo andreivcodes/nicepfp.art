@@ -10,16 +10,12 @@ export default function DrawSheet() {
       boxShadow="base"
       p={3}
       rounded="md"
-      bg={useColorModeValue('white', 'gray.700')}
+      bg={useColorModeValue('white', 'gray.800')}
     >
       <Sketch setup={setup} draw={draw} />
 
       <Button colorScheme="teal" variant="outline" mt={3}>
-        <RepeatIcon
-          colorScheme="teal"
-          variant="outline"
-          onClick={startDrawing}
-        />
+        <RepeatIcon variant="outline" onClick={startDrawing} />
       </Button>
     </Box>
   );
