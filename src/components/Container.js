@@ -104,6 +104,9 @@ export default function Container() {
           <Card6 />
         </GridItem>
       </Grid>
+      <Text fontSize="md" fontWeight="normal" textAlign="right" m={3}>
+        with ❤️ by andrei
+      </Text>
     </Flex>
   );
 }
