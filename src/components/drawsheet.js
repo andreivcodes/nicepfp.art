@@ -26,9 +26,7 @@ export default function DrawSheet() {
         flexDirection="column"
         mt={3}
       >
-        <Button colorScheme="purple" variant="outline">
-          Mint
-        </Button>
+        <Button colorScheme="purple">Mint</Button>
       </Flex>
     </Box>
   );
