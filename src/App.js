@@ -205,7 +205,8 @@ function App() {
                     href="https://github.com/andreivdev/nicepfp.art"
                     isExternal
                   >
-                    Github page. <ExternalLinkIcon mx="2px" />
+                    Github page
+                    <ExternalLinkIcon mx="2px" />
                   </Link>
                   .
                 </StatHelpText>
