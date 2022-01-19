@@ -15,7 +15,10 @@ function preload() {
   model = ml5.sketchRNN('face');
 }
 
-export const setup = (p5, canvasParentRef) => {
+let p5;
+
+export const setup = (_p5, canvasParentRef) => {
+  p5 = _p5;
   preload();
   p5.createCanvas(500, 500).parent(canvasParentRef);
   p5.background(255);
@@ -25,7 +28,7 @@ export const setup = (p5, canvasParentRef) => {
 };
 
 // Reset the drawing
-const startDrawing = p5 => {
+export const startDrawing = () => {
   p5.background(255);
   x = p5.width / 2;
   y = p5.height / 3;
@@ -43,7 +46,7 @@ export const draw = (p5, parent) => {
   // If something new to draw
   if (strokePath) {
     // If the pen is down, draw a line
-    if (previous_pen == 'down') {
+    if (previous_pen === 'down') {
       p5.stroke(0);
       p5.strokeWeight(3.0);
       p5.line(x, y, x + strokePath.dx, y + strokePath.dy);
