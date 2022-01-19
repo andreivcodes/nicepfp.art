@@ -5,6 +5,9 @@ import {
   Grid,
   GridItem,
   Button,
+  SimpleGrid,
+  Box,
+  Center,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './../ColorModeSwitcher';
@@ -24,30 +27,22 @@ export default function Container() {
       alignItems="center"
       bg={useColorModeValue('gray.50', 'gray.800')}
     >
-      <Grid
-        maxW="70%"
-        minH="100vh"
-        gap={5}
-        p={5}
-        templateRows="repeat(3, auto)"
-        templateColumns="repeat(5, auto)"
-      >
-        <GridItem row={1} col={1}></GridItem>
-        <GridItem row={1} col={2}></GridItem>
-        <GridItem row={1} col={3}></GridItem>
-        <GridItem row={1} col={4}></GridItem>
-        <GridItem row={1} col={5}>
-          <Flex alignItems="end" flexDirection="column">
-            <ColorModeSwitcher justifySelf="flex-end" />
-          </Flex>
-        </GridItem>
+      <Flex alignSelf="end" m={5}>
+        <ColorModeSwitcher justifySelf="flex-end" />
+      </Flex>
 
-        <GridItem row={2} colSpan={2}>
-          <DrawSheet />
-        </GridItem>
+      <Flex maxW="70%" minH="100vh" flexDirection="column">
+        <SimpleGrid
+          columns={{ lg: 1, xl: 2 }}
+          spacing={10}
+          alignItems="stretch"
+          justifyItems="center"
+        >
+          <Box>
+            <DrawSheet />
+          </Box>
 
-        <GridItem row={2} colSpan={3}>
-          <Flex h="100%" justifyContent="center" flexDirection="column">
+          <Flex justifyContent="center" flexDirection="column">
             <Text fontSize="5xl" fontWeight="thin" textAlign="right">
               Welcome to nicepfp.art
             </Text>
@@ -55,57 +50,32 @@ export default function Container() {
               I needed a nice profile picture for my Twitter, so I made this
             </Text>
             <Text fontSize="md" fontWeight="normal" textAlign="right">
-              The perfect machine learning pfp NFTs.
+              The perfect machine learning NFT pfp.
             </Text>
           </Flex>
-        </GridItem>
+        </SimpleGrid>
+        <Center>
+          <SimpleGrid
+            columns={{ lg: 1, xl: 3 }}
+            spacing={10}
+            mt={10}
+            maxW="90%"
+          >
+            <Card1 />
+            <Card2 />
+            <Card3 />
+            <Card4 />
+            <Card5 />
+            <Card6 />
+          </SimpleGrid>
+        </Center>
+      </Flex>
 
-        <GridItem row={3} colSpan={2}>
-          <Flex h="100%" justifyContent="top" w="100%" flexDirection="column">
-            <Button colorScheme="teal" variant="outline">
-              Mint
-            </Button>
-          </Flex>
-        </GridItem>
-
-        <GridItem row={3} col={3}></GridItem>
-        <GridItem row={3} col={4}></GridItem>
-        <GridItem row={3} col={5}></GridItem>
-      </Grid>
-
-      <Grid
-        maxW="70%"
-        gap={5}
-        p={5}
-        templateRows="repeat(2, 1fr)"
-        templateColumns="repeat(3, 1fr)"
-      >
-        <GridItem>
-          <Card1 />
-        </GridItem>
-
-        <GridItem>
-          <Card2 />
-        </GridItem>
-
-        <GridItem>
-          <Card3 />
-        </GridItem>
-
-        <GridItem>
-          <Card4 />
-        </GridItem>
-
-        <GridItem>
-          <Card5 />
-        </GridItem>
-
-        <GridItem>
-          <Card6 />
-        </GridItem>
-      </Grid>
-      <Text fontSize="md" fontWeight="normal" textAlign="right" m={3}>
+      <Text fontSize="md" fontWeight="normal" textAlign="right" mt={3}>
         with ❤️ by andrei
+      </Text>
+      <Text fontSize="sm" fontWeight="light" textAlign="right" mb={3}>
+        0x636106e4Bd34195F4678af160762cc5157bEA7e8
       </Text>
     </Flex>
   );

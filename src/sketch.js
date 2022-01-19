@@ -20,7 +20,7 @@ let p5;
 export const setup = (_p5, canvasParentRef) => {
   p5 = _p5;
   preload();
-  p5.createCanvas(500, 500).parent(canvasParentRef);
+  p5.createCanvas(512, 512).parent(canvasParentRef);
   p5.background(255);
 
   // run sketchRNN
