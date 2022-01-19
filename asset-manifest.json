@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/nicepfp.art/static/css/main.ce343902.css",
-    "main.js": "/nicepfp.art/static/js/main.6852fea3.js",
+    "main.js": "/nicepfp.art/static/js/main.f9eb3f7e.js",
     "static/media/roboto-all-500-normal.woff": "/nicepfp.art/static/media/roboto-all-500-normal.52cb737b682eb9661ee1.woff",
     "static/media/roboto-all-900-normal.woff": "/nicepfp.art/static/media/roboto-all-900-normal.e538591829c06ffa8fca.woff",
     "static/media/roboto-all-700-normal.woff": "/nicepfp.art/static/media/roboto-all-700-normal.ef6d1d09b20b877fee4e.woff",
@@ -52,10 +52,10 @@
     "static/media/roboto-greek-ext-100-normal.woff2": "/nicepfp.art/static/media/roboto-greek-ext-100-normal.39f6384cff49b7ba80fe.woff2",
     "index.html": "/nicepfp.art/index.html",
     "main.ce343902.css.map": "/nicepfp.art/static/css/main.ce343902.css.map",
-    "main.6852fea3.js.map": "/nicepfp.art/static/js/main.6852fea3.js.map"
+    "main.f9eb3f7e.js.map": "/nicepfp.art/static/js/main.f9eb3f7e.js.map"
   },
   "entrypoints": [
     "static/css/main.ce343902.css",
-    "static/js/main.6852fea3.js"
+    "static/js/main.f9eb3f7e.js"
   ]
 }
