@@ -21,8 +21,8 @@ export default function Card3() {
         <StatLabel m={2}>How much does it cost?</StatLabel>
         <Divider />
         <StatHelpText m={3}>
-          Minting is free but you have to pay the gas fees. I get 10% royalties
-          on secondary market sales.
+          Minting is and will always remain free but you have to pay the gas
+          fees. I get 10% royalties on secondary market sales.
         </StatHelpText>
       </Stat>
     </Box>

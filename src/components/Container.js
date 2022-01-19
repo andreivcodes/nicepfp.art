@@ -1,14 +1,11 @@
 import {
-  ChakraProvider,
   Text,
   Flex,
-  Grid,
-  GridItem,
-  Button,
   SimpleGrid,
   Box,
   Center,
   useColorModeValue,
+  Code,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './../ColorModeSwitcher';
 
@@ -44,13 +41,19 @@ export default function Container() {
 
           <Flex justifyContent="center" flexDirection="column">
             <Text fontSize="5xl" fontWeight="thin" textAlign="right">
-              Welcome to nicepfp.art
+              Welcome to{' '}
+              <Code fontSize="5xl" colorScheme="purple">
+                nicepfp.art
+              </Code>
             </Text>
             <Text fontSize="md" fontWeight="light" textAlign="right">
-              I needed a nice profile picture for my Twitter, so I made this
+              I needed a nice profile picture for my Twitter, so I made this.
             </Text>
             <Text fontSize="md" fontWeight="normal" textAlign="right">
-              The perfect machine learning NFT pfp.
+              The perfect ml nft pfp.
+            </Text>
+            <Text fontSize="md" fontWeight="light" textAlign="right">
+              You know... machine learning non fungible token profile picture.
             </Text>
           </Flex>
         </SimpleGrid>

@@ -15,7 +15,7 @@ export default function DrawSheet() {
       <Sketch setup={setup} draw={draw} />
 
       <Flex justifyContent="end">
-        <Button colorScheme="teal" variant="outline" mt={3}>
+        <Button colorScheme="purple" variant="outline" mt={3}>
           <RepeatIcon variant="outline" onClick={startDrawing} />
         </Button>
       </Flex>
@@ -26,7 +26,7 @@ export default function DrawSheet() {
         flexDirection="column"
         mt={3}
       >
-        <Button colorScheme="teal" variant="outline">
+        <Button colorScheme="purple" variant="outline">
           Mint
         </Button>
       </Flex>
