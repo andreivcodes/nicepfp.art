@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^12.8.3",
+    "ethers": "^5.5.3",
     "framer-motion": "^4.1.17",
     "ml5": "^0.7.1",
     "react": "^17.0.2",

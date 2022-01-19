@@ -2,6 +2,7 @@ import { Box, Button, useColorModeValue, Flex } from '@chakra-ui/react';
 import Sketch from 'react-p5';
 import { RepeatIcon } from '@chakra-ui/icons';
 import { setup, draw, startDrawing } from './../sketch';
+import MintButton from './MintButton';
 export default function DrawSheet() {
   return (
     <Box
@@ -15,8 +16,13 @@ export default function DrawSheet() {
       <Sketch setup={setup} draw={draw} />
 
       <Flex justifyContent="end">
-        <Button colorScheme="purple" variant="outline" mt={3}>
-          <RepeatIcon variant="outline" onClick={startDrawing} />
+        <Button
+          colorScheme="purple"
+          variant="outline"
+          mt={3}
+          onClick={startDrawing}
+        >
+          <RepeatIcon variant="outline" /> {'\xa0 Redraw'}
         </Button>
       </Flex>
       <Flex
@@ -26,7 +32,7 @@ export default function DrawSheet() {
         flexDirection="column"
         mt={3}
       >
-        <Button colorScheme="purple">Mint</Button>
+        <MintButton />
       </Flex>
     </Box>
   );
