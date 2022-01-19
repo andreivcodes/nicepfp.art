@@ -1,9 +1,9 @@
-import * as ml5 from "ml5";
+import * as ml5 from 'ml5';
 
 // The SketchRNN model
 let model;
 // Start by drawing
-let previous_pen = "down";
+let previous_pen = 'down';
 // Current location of drawing
 let x, y;
 // The current "stroke" of the drawing
@@ -12,12 +12,12 @@ let strokePath;
 // For when SketchRNN is fixed
 function preload() {
   // See a list of all supported models: https://github.com/ml5js/ml5-library/blob/master/src/SketchRNN/models.js
-  model = ml5.sketchRNN("face");
+  model = ml5.sketchRNN('face');
 }
 
-export const setup = (p5, parent) => {
+export const setup = (p5, canvasParentRef) => {
   preload();
-  p5.createCanvas(800, 800);
+  p5.createCanvas(500, 500).parent(canvasParentRef);
   p5.background(255);
 
   // run sketchRNN
@@ -25,7 +25,7 @@ export const setup = (p5, parent) => {
 };
 
 // Reset the drawing
-const startDrawing = (p5) => {
+const startDrawing = p5 => {
   p5.background(255);
   x = p5.width / 2;
   y = p5.height / 3;
@@ -43,7 +43,7 @@ export const draw = (p5, parent) => {
   // If something new to draw
   if (strokePath) {
     // If the pen is down, draw a line
-    if (previous_pen == "down") {
+    if (previous_pen == 'down') {
       p5.stroke(0);
       p5.strokeWeight(3.0);
       p5.line(x, y, x + strokePath.dx, y + strokePath.dy);
@@ -55,7 +55,7 @@ export const draw = (p5, parent) => {
     previous_pen = strokePath.pen;
 
     // If the drawing is complete
-    if (strokePath.pen !== "end") {
+    if (strokePath.pen !== 'end') {
       strokePath = null;
       model.generate(gotStroke);
     }
