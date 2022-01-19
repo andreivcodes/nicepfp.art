@@ -23,7 +23,7 @@ export default function Card5() {
         <StatLabel m={2}>Where can I find the source code?</StatLabel>
         <Divider />
         <StatHelpText m={3}>
-          The code is available on my
+          The code is available on my{' '}
           <Link href="https://github.com/andreivdev/nicepfp.art" isExternal>
             Github page
             <ExternalLinkIcon mx="2px" />
