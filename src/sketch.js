@@ -16,15 +16,20 @@ function preload() {
 }
 
 let p5;
+let cnv;
+
+export const captureFrame = () => {
+  return cnv.elt.toDataURL();
+};
 
 export const setup = (_p5, canvasParentRef) => {
   p5 = _p5;
   preload();
-  p5.createCanvas(512, 512).parent(canvasParentRef);
+  cnv = p5.createCanvas(512, 512).parent(canvasParentRef);
   p5.background(255);
 
   // run sketchRNN
-  startDrawing(p5);
+  startDrawing();
 };
 
 // Reset the drawing
@@ -42,7 +47,7 @@ function gotStroke(err, s) {
   strokePath = s;
 }
 
-export const draw = (p5, parent) => {
+export const draw = () => {
   // If something new to draw
   if (strokePath) {
     // If the pen is down, draw a line

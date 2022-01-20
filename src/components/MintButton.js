@@ -1,13 +1,28 @@
-import { Button, Box, Text, Code, useToast } from '@chakra-ui/react';
+import { Button, Box, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import { captureFrame } from './../sketch';
+import { create } from 'ipfs-http-client';
 
 export default function MintButton() {
+  const client = create({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+      authorization:
+        'Basic ' +
+        process.env.REACT_INFURA_IPFS_PROJECT_ID +
+        ':' +
+        process.env.REACT_INFURA_IPFS_PROJECT_SECRET,
+    },
+  });
+
   const [currentAccount, setCurrentAccount] = useState('');
   const toast = useToast();
 
   useEffect(() => {
     checkIfWalletIsConnected();
-  }, []);
+  });
 
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -89,6 +104,31 @@ export default function MintButton() {
     }
   };
 
+  function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  const mint = async () => {
+    var file = dataURLtoFile(captureFrame(), 'file.png');
+    const imageIPFS = await client.add(file);
+    let jsonObj = {
+      name: `nicepfp`,
+      description: `A very nice pfp created using nicepfp.art`,
+      animation_url: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+    };
+    const jsonIPFS = await client.add(JSON.stringify(jsonObj));
+
+    console.log(jsonIPFS.path);
+  };
+
   return (
     <Box w="100%">
       {currentAccount === '' ? (
@@ -96,7 +136,7 @@ export default function MintButton() {
           Connect to Wallet
         </Button>
       ) : (
-        <Button colorScheme="purple" w="100%">
+        <Button colorScheme="purple" w="100%" onClick={mint}>
           Mint
         </Button>
       )}

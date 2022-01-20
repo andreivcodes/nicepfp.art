@@ -75,7 +75,10 @@ export default function Container() {
       </Flex>
 
       <Text fontSize="md" fontWeight="normal" textAlign="right" mt={3}>
-        with ❤️ by andrei
+        with ❤️ by{' '}
+        <Code fontSize="sm" colorScheme="purple">
+          andrei
+        </Code>
       </Text>
       <Text fontSize="sm" fontWeight="light" textAlign="right" mb={3}>
         0x636106e4Bd34195F4678af160762cc5157bEA7e8
