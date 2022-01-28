@@ -11,16 +11,18 @@ export default function Card3() {
   return (
     <Box
       w="100%"
-      h="40"
+      h="56"
       boxShadow="base"
       p={3}
       rounded="md"
       bg={useColorModeValue('white', 'gray.700')}
     >
       <Stat>
-        <StatLabel m={2}>How much does it cost?</StatLabel>
+        <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
+          How much does it cost?
+        </StatLabel>
         <Divider />
-        <StatHelpText m={3}>
+        <StatHelpText m={3} fontFamily="Spartan">
           Minting is and will always remain free but you have to pay the gas
           fees. I get 10% royalties on secondary market sales.
         </StatHelpText>

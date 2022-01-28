@@ -13,16 +13,18 @@ export default function Card5() {
   return (
     <Box
       w="100%"
-      h="40"
+      h="56"
       boxShadow="base"
       p={3}
       rounded="md"
       bg={useColorModeValue('white', 'gray.700')}
     >
       <Stat>
-        <StatLabel m={2}>Where can I find the source code?</StatLabel>
+        <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
+          Where can I find the source code?
+        </StatLabel>
         <Divider />
-        <StatHelpText m={3}>
+        <StatHelpText m={3} fontFamily="Spartan">
           The code is available on my{' '}
           <Link href="https://github.com/andreivdev/nicepfp.art" isExternal>
             Github page

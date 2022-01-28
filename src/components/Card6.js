@@ -13,16 +13,18 @@ export default function Card6() {
   return (
     <Box
       w="100%"
-      h="40"
+      h="56"
       boxShadow="base"
       p={3}
       rounded="md"
       bg={useColorModeValue('white', 'gray.700')}
     >
       <Stat>
-        <StatLabel m={2}>Thanks to</StatLabel>
+        <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
+          Thanks to
+        </StatLabel>
         <Divider />
-        <StatHelpText m={3}>
+        <StatHelpText m={3} fontFamily="Spartan">
           <Link href="https://reactjs.org/" isExternal>
             react
             <ExternalLinkIcon mx="2px" />

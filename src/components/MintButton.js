@@ -136,7 +136,13 @@ export default function MintButton() {
           Connect to Wallet
         </Button>
       ) : (
-        <Button colorScheme="purple" w="100%" onClick={mint}>
+        <Button
+          colorScheme="purple"
+          w="100%"
+          onClick={mint}
+          fontFamily="Spartan"
+          fontSize="sm"
+        >
           Mint
         </Button>
       )}

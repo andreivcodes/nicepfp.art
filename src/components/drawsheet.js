@@ -20,6 +20,8 @@ export default function DrawSheet() {
           colorScheme="purple"
           variant="outline"
           mt={3}
+          fontFamily="Spartan"
+          fontSize="sm"
           onClick={startDrawing}
         >
           <RepeatIcon variant="outline" /> {'\xa0 Redraw'}

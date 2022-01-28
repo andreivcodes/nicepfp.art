@@ -11,16 +11,18 @@ export default function Card1() {
   return (
     <Box
       w="100%"
-      h="40"
+      h="56"
       boxShadow="base"
       p={3}
       rounded="md"
       bg={useColorModeValue('white', 'gray.700')}
     >
       <Stat>
-        <StatLabel m={2}>What is this thing?</StatLabel>
+        <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
+          What is this thing?
+        </StatLabel>
         <Divider />
-        <StatHelpText m={3}>
+        <StatHelpText m={3} fontFamily="Spartan">
           This website uses machine learning to generate a unique profile
           picture doodle.
         </StatHelpText>

@@ -10,6 +10,7 @@
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@fontsource/roboto": "^4.5.1",
+    "@fontsource/spartan": "^4.5.2",
     "@fontsource/ubuntu": "^4.5.0",
     "@fontsource/ubuntu-mono": "^4.5.0",
     "@openzeppelin/contracts": "^4.4.2",

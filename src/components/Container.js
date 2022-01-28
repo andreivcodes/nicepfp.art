@@ -40,19 +40,39 @@ export default function Container() {
           </Box>
 
           <Flex justifyContent="center" flexDirection="column">
-            <Text fontSize="5xl" fontWeight="thin" textAlign="right">
+            <Text
+              fontSize="5xl"
+              fontWeight="thin"
+              textAlign="right"
+              fontFamily="Spartan"
+            >
               Welcome to{' '}
-              <Code fontSize="5xl" colorScheme="purple">
+              <Code fontSize="5xl" colorScheme="purple" fontFamily="Spartan">
                 nicepfp.art
               </Code>
             </Text>
-            <Text fontSize="md" fontWeight="light" textAlign="right">
+            <Text
+              fontSize="md"
+              fontWeight="light"
+              textAlign="right"
+              fontFamily="Spartan"
+            >
               I needed a nice profile picture for my Twitter, so I made this.
             </Text>
-            <Text fontSize="md" fontWeight="normal" textAlign="right">
+            <Text
+              fontSize="md"
+              fontWeight="normal"
+              textAlign="right"
+              fontFamily="Spartan"
+            >
               The perfect ml nft pfp.
             </Text>
-            <Text fontSize="md" fontWeight="light" textAlign="right">
+            <Text
+              fontSize="md"
+              fontWeight="light"
+              textAlign="right"
+              fontFamily="Spartan"
+            >
               You know... machine learning non fungible token profile picture.
             </Text>
           </Flex>
@@ -74,13 +94,25 @@ export default function Container() {
         </Center>
       </Flex>
 
-      <Text fontSize="md" fontWeight="normal" textAlign="right" mt={3}>
+      <Text
+        fontSize="md"
+        fontWeight="normal"
+        textAlign="right"
+        mt={3}
+        fontFamily="Spartan"
+      >
         with ❤️ by{' '}
-        <Code fontSize="sm" colorScheme="purple">
+        <Code fontSize="md" colorScheme="purple" fontFamily="Spartan">
           andrei
         </Code>
       </Text>
-      <Text fontSize="sm" fontWeight="light" textAlign="right" mb={3}>
+      <Text
+        fontSize="sm"
+        fontWeight="light"
+        textAlign="right"
+        mb={3}
+        fontFamily="Spartan"
+      >
         0x636106e4Bd34195F4678af160762cc5157bEA7e8
       </Text>
     </Flex>
