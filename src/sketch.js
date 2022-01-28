@@ -53,7 +53,7 @@ export const draw = () => {
     // If the pen is down, draw a line
     if (previous_pen === 'down') {
       p5.stroke(0);
-      p5.strokeWeight(3.0);
+      p5.strokeWeight(5.0);
       p5.line(x, y, x + strokePath.dx, y + strokePath.dy);
     }
     // Move the pen
