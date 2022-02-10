@@ -1,5 +1,6 @@
 {
   "name": "nicepfp.art-hardhat",
+  "version": "1.0.0",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@nomiclabs/hardhat-waffle": "^2.0.2",
