@@ -1,27 +1,27 @@
-import { Button, Box, useToast } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
-import { captureFrame } from '../sketch';
-import { create } from 'ipfs-http-client';
-import contractJson from '../abi/Nicepfp.json';
-import { ethers } from 'ethers';
+import { Button, Box, useToast } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { captureFrame } from "../sketch";
+import { create } from "ipfs-http-client";
+import contractJson from "../abi/Nicepfp.json";
+import { ethers } from "ethers";
 
-const CONTRACT_ADDRESS = '0x21AC023DB43991071Fa423F21f2CFE03D3883dcf';
+const CONTRACT_ADDRESS = "0x6370D7D014524C86FFd5BBEA869689Aa20cfd098";
 
 export default function MintButton() {
   const client = create({
-    host: 'ipfs.infura.io',
+    host: "ipfs.infura.io",
     port: 5001,
-    protocol: 'https',
+    protocol: "https",
     headers: {
       authorization:
-        'Basic ' +
+        "Basic " +
         process.env.REACT_INFURA_IPFS_PROJECT_ID +
-        ':' +
+        ":" +
         process.env.REACT_INFURA_IPFS_PROJECT_SECRET,
     },
   });
 
-  const [currentAccount, setCurrentAccount] = useState('');
+  const [currentAccount, setCurrentAccount] = useState("");
   const toast = useToast();
 
   useEffect(() => {
@@ -32,18 +32,18 @@ export default function MintButton() {
     const { ethereum } = window;
 
     if (!ethereum) {
-      console.log('Make sure you have metamask');
+      console.log("Make sure you have metamask");
       return;
     } else {
-      console.log('We have the ethereum object', ethereum);
+      console.log("We have the ethereum object", ethereum);
     }
 
     await switchNetworkMumbai();
-    const accounts = await ethereum.request({ method: 'eth_accounts' });
+    const accounts = await ethereum.request({ method: "eth_accounts" });
 
     if (accounts.length !== 0) {
       const account = accounts[0];
-      console.log('Found authorized account:', account);
+      console.log("Found authorized account:", account);
       setCurrentAccount(account);
     }
   };
@@ -52,22 +52,22 @@ export default function MintButton() {
     try {
       const { ethereum } = window;
       if (!ethereum) {
-        alert('Get Metamask!');
+        alert("Get Metamask!");
         return;
       }
 
       await switchNetworkMumbai();
 
       const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
+        method: "eth_requestAccounts",
       });
-      console.log('Connected', accounts[0]);
+      console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
 
       toast({
-        title: 'Connected',
+        title: "Connected",
         description: `Connected as ${accounts[0]}.`,
-        status: 'success',
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
@@ -79,14 +79,14 @@ export default function MintButton() {
   const switchNetworkMumbai = async () => {
     try {
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x7A69' }],
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x7A69" }],
       });
     } catch (error) {
       if (error.code === 4902) {
         try {
           await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
+            method: "wallet_addEthereumChain",
             /*   params: [
               {
                 chainId: '0x13881',
@@ -102,12 +102,12 @@ export default function MintButton() {
             ], */
             params: [
               {
-                chainId: '0x7A69',
-                chainName: 'Localhost node',
-                rpcUrls: ['http://127.0.0.1:8545'],
+                chainId: "0x7A69",
+                chainName: "Localhost node",
+                rpcUrls: ["http://127.0.0.1:8545"],
                 nativeCurrency: {
-                  name: 'Matic',
-                  symbol: 'Matic',
+                  name: "Matic",
+                  symbol: "Matic",
                   decimals: 18,
                 },
               },
@@ -121,7 +121,7 @@ export default function MintButton() {
   };
 
   function dataURLtoFile(dataurl, filename) {
-    var arr = dataurl.split(','),
+    var arr = dataurl.split(","),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
       n = bstr.length,
@@ -133,7 +133,7 @@ export default function MintButton() {
   }
 
   const mint = async () => {
-    var file = dataURLtoFile(captureFrame(), 'file.png');
+    var file = dataURLtoFile(captureFrame(), "file.png");
     const imageIPFS = await client.add(file);
     let jsonObj = {
       name: `nicepfp`,
@@ -160,7 +160,7 @@ export default function MintButton() {
 
   return (
     <Box w="100%">
-      {currentAccount === '' ? (
+      {currentAccount === "" ? (
         <Button colorScheme="purple" w="100%" onClick={connectWallet}>
           Connect to Wallet
         </Button>
