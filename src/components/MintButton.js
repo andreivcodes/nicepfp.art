@@ -2,6 +2,10 @@ import { Button, Box, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { captureFrame } from './../sketch';
 import { create } from 'ipfs-http-client';
+import contractJson from './../abi/Nicepfp.json';
+import { ethers } from 'ethers';
+
+const CONTRACT_ADDRESS = '0x08677Af0A7F54fE2a190bb1F75DE682fe596317e';
 
 export default function MintButton() {
   const client = create({
@@ -76,14 +80,14 @@ export default function MintButton() {
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x13881' }],
+        params: [{ chainId: '31337' }],
       });
     } catch (error) {
       if (error.code === 4902) {
         try {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [
+            /*   params: [
               {
                 chainId: '0x13881',
                 chainName: 'Mumbai',
@@ -94,6 +98,18 @@ export default function MintButton() {
                   decimals: 18,
                 },
                 blockExplorerUrls: ['https://explorer-mumbai.maticvigil.com'],
+              },
+            ], */
+            params: [
+              {
+                chainId: '31337',
+                chainName: 'Localhost node',
+                rpcUrls: ['http://127.0.0.1:8545'],
+                nativeCurrency: {
+                  name: 'Matic',
+                  symbol: 'Matic',
+                  decimals: 18,
+                },
               },
             ],
           });
@@ -125,6 +141,18 @@ export default function MintButton() {
       animation_url: `https://ipfs.io/ipfs/${imageIPFS.path}`,
     };
     const jsonIPFS = await client.add(JSON.stringify(jsonObj));
+
+    var provider = new ethers.providers.Web3Provider(window.ethereum);
+    var signer = provider.getSigner();
+    var contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      contractJson.abi,
+      signer
+    );
+
+    contract
+      .safeMint(signer.getAddress(), `https://ipfs.io/ipfs/` + jsonIPFS.path)
+      .call();
 
     console.log(jsonIPFS.path);
   };

@@ -18,7 +18,7 @@
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^12.8.3",
     "dotenv": "^14.2.0",
-    "ethers": "^5.5.3",
+    "ethers": "^5.5.4",
     "framer-motion": "^4.1.17",
     "ipfs-http-client": "^55.0.0",
     "ml5": "^0.7.1",
@@ -35,7 +35,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "start-hardhat": "cd hardhat && npm run start",
+    "deploy-hardhat": "cd hardhat && npm run deploy"
   },
   "eslintConfig": {
     "extends": "react-app"
