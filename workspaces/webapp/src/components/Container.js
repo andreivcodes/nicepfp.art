@@ -7,7 +7,7 @@ import {
   useColorModeValue,
   Code,
 } from '@chakra-ui/react';
-import { ColorModeSwitcher } from './../ColorModeSwitcher';
+import { ColorModeSwitcher } from '../ColorModeSwitcher';
 
 import DrawSheet from './drawsheet';
 import Card1 from './Card1';

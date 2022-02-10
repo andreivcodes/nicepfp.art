@@ -1,7 +1,7 @@
 import { Box, Button, useColorModeValue, Flex } from '@chakra-ui/react';
 import Sketch from 'react-p5';
 import { RepeatIcon } from '@chakra-ui/icons';
-import { setup, draw, startDrawing } from './../sketch';
+import { setup, draw, startDrawing } from '../sketch';
 import MintButton from './MintButton';
 export default function DrawSheet() {
   return (

@@ -1,11 +1,11 @@
 import { Button, Box, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { captureFrame } from './../sketch';
+import { captureFrame } from '../sketch';
 import { create } from 'ipfs-http-client';
-import contractJson from './../abi/Nicepfp.json';
+import contractJson from '../abi/Nicepfp.json';
 import { ethers } from 'ethers';
 
-const CONTRACT_ADDRESS = '0x08677Af0A7F54fE2a190bb1F75DE682fe596317e';
+const CONTRACT_ADDRESS = '0x21AC023DB43991071Fa423F21f2CFE03D3883dcf';
 
 export default function MintButton() {
   const client = create({
@@ -80,7 +80,7 @@ export default function MintButton() {
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '31337' }],
+        params: [{ chainId: '0x7A69' }],
       });
     } catch (error) {
       if (error.code === 4902) {
@@ -102,7 +102,7 @@ export default function MintButton() {
             ], */
             params: [
               {
-                chainId: '31337',
+                chainId: '0x7A69',
                 chainName: 'Localhost node',
                 rpcUrls: ['http://127.0.0.1:8545'],
                 nativeCurrency: {
@@ -147,10 +147,11 @@ export default function MintButton() {
     var contract = new ethers.Contract(
       CONTRACT_ADDRESS,
       contractJson.abi,
-      signer
+      provider
     );
 
     contract
+      .connect(signer)
       .safeMint(signer.getAddress(), `https://ipfs.io/ipfs/` + jsonIPFS.path)
       .call();
 

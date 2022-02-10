@@ -12,7 +12,7 @@ module.exports = {
     hardhat: {
       // forked mainnet used for testing
       forking: {
-        url: `https://polygon-mainnet.g.alchemy.com/v2/${POLYGON_API_KEY}`,
+        url: `https://opt-kovan.g.alchemy.com/v2/FJx7sc1pctjPlHByZd8R6On40hEdBvdM`,
       },
     },
   },

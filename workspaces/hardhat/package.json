@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-project",
+  "name": "nicepfp.art-hardhat",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@nomiclabs/hardhat-waffle": "^2.0.2",
@@ -13,7 +13,6 @@
     "dotenv": "^16.0.0"
   },
   "scripts": {
-    "start": "npx hardhat node",
-    "deploy": "npx hardhat run --network localhost scripts/deploy.js"
+    "dev": "npx hardhat run --network localhost scripts/deploy.js"
   }
 }
