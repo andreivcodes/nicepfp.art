@@ -13,13 +13,30 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
+  // const [deployer] = await hre.ethers.getSigners();
+
+  // const params = {
+  //   to: "0xDD002905eBEeAE02B4354F976A12C0AdcCc05347",
+  //   value: ethers.utils.parseUnits("1", "ether").toHexString(),
+  // };
+  // await deployer.sendTransaction(params);
+
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const NicepfpArt = await hre.ethers.getContractFactory("NicepfpArt");
+  const nicepfp = await NicepfpArt.deploy();
 
-  await greeter.deployed();
+  await nicepfp.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("NicepfpArt deployed to:", nicepfp.address);
+
+  console.log(
+    "Sleeping for 60 seconds to make sure propagation is complete..."
+  );
+  await new Promise((r) => setTimeout(r, 1000 * 60));
+
+  await hre.run("verify:verify", {
+    address: nicepfp.address,
+  });
 }
 
 // We recommend this pattern to be able to use async/await everywhere

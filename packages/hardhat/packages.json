@@ -1,8 +1,0 @@
-{
-  "name": "hardhat",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "npx hardhat compile && npx hardhat run --network localhost scripts/deploy.js"
-  }
-}

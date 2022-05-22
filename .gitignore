@@ -1,1 +1,4 @@
 node_modules
+packages/web/storage
+packages/hardhat/yarn-error.log
+packages/web/.env
