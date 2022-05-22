@@ -6,8 +6,9 @@ import {
   Divider,
   useColorModeValue,
   SimpleGrid,
-  Center,
+  Link,
 } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractJson from "../abi/Nicepfp.json";
@@ -79,7 +80,11 @@ export default function LatestMints() {
     >
       <Stat>
         <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
-          Latest mints
+          Latest mints -{" "}
+          <Link href="https://opensea.io/collection/nicepfp-art" isExternal>
+            View OpenSea collection
+            <ExternalLinkIcon mx="2px" />
+          </Link>
         </StatLabel>
         <Divider />
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">

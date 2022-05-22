@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { useState, useEffect } from "react";
+import Head from "next/head";
 
 export default function MyApp({ Component, pageProps }) {
   const [showChild, setShowChild] = useState(false);
@@ -14,6 +15,13 @@ export default function MyApp({ Component, pageProps }) {
   if (typeof window === "undefined") {
     return null;
   } else {
-    return <Component {...pageProps} />;
+    return (
+      <>
+        <Head>
+          <link rel="shortcut icon" href="/favicon.png" />
+        </Head>
+        <Component {...pageProps} />
+      </>
+    );
   }
 }

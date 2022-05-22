@@ -31,11 +31,8 @@ const post = async (req, res) => {
   form.parse(req, async function (err, fields, files) {
     var file = files.file;
 
-    const data = fs.readFileSync(file.filepath);
-    fs.writeFileSync(`./storage/${file.newFilename}.png`, data);
-    await fs.unlinkSync(file.filepath);
+    const img = fs.readFileSync(file.filepath);
 
-    const img = fs.readFileSync(`./storage/${file.newFilename}.png`);
     const imageIPFS = await client.add(img);
     let jsonObj = {
       name: `nicepfp`,

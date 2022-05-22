@@ -30,6 +30,14 @@ export default function Card5() {
             Github page
             <ExternalLinkIcon mx="2px" />
           </Link>
+          . The contract is available{" "}
+          <Link
+            href="https://polygonscan.com/address/0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34#code"
+            isExternal
+          >
+            here
+            <ExternalLinkIcon mx="2px" />
+          </Link>
           .
         </StatHelpText>
       </Stat>
