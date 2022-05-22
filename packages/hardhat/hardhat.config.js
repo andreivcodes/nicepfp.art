@@ -30,10 +30,15 @@ module.exports = {
       url: process.env.ALCHEMY_MUMBAI,
       accounts: [process.env.PRIVATE_KEY],
     },
+    polygon: {
+      url: process.env.ALCHEMY_MAINNET,
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   etherscan: {
     apiKey: {
       polygonMumbai: process.env.ETHERSCAN_MUMBAI,
+      polygon: process.env.ETHERSCAN_MUMBAI,
     },
   },
   solidity: "0.8.4",

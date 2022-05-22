@@ -64,7 +64,7 @@ export default function MintButton() {
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x13881" }],
+        params: [{ chainId: "0x89" }],
       });
     } catch (error) {
       if (error.code === 4902) {
@@ -73,12 +73,12 @@ export default function MintButton() {
             method: "wallet_addEthereumChain",
             params: [
               {
-                chainId: "0x7a69",
-                chainName: "Localhost node",
-                rpcUrls: ["https://127.0.0.1:8545"],
+                chainId: "0x89",
+                chainName: "Polygon Mainnet",
+                rpcUrls: ["https://rpc-mainnet.matic.quiknode.pro"],
                 nativeCurrency: {
-                  name: "Matic",
-                  symbol: "Matic",
+                  name: "MATIC",
+                  symbol: "MATIC",
                   decimals: 18,
                 },
               },
