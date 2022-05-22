@@ -6,7 +6,6 @@ import {
   Divider,
   useColorModeValue,
   SimpleGrid,
-  Center,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
