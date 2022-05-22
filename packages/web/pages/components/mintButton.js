@@ -40,7 +40,7 @@ export default function MintButton() {
         return;
       }
 
-      await switchNetworkMumbai();
+      await switchNetwork();
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
@@ -60,7 +60,7 @@ export default function MintButton() {
     }
   };
 
-  const switchNetworkMumbai = async () => {
+  const switchNetwork = async () => {
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
