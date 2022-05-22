@@ -17,7 +17,7 @@ export default function MintButton() {
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
 
-    await switchNetworkMumbai();
+    await switchNetwork();
     const accounts = await ethereum.request({ method: "eth_accounts" });
 
     if (accounts.length !== 0) {
