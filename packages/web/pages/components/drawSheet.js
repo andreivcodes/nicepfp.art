@@ -29,7 +29,7 @@ export default function DrawSheet() {
         <div>
           {isMobile ? (
             <Text fontWeight="thin" textAlign="center" fontFamily="Spartan">
-              Can't draw on small screens, sorry. Try using nicepfp.art on
+              Can&apos;t draw on small screens, sorry. Try using nicepfp.art on
               desktop.
             </Text>
           ) : (
