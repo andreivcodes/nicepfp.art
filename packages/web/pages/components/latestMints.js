@@ -12,23 +12,46 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractJson from "../abi/Nicepfp.json";
+import { useContractRead } from "wagmi";
 
-const Mint = ({ tokenid }) => {
+const Mint = ({ id }) => {
   const [uri, setUri] = useState("");
   const [img, setImg] = useState("");
-  useEffect(() => {
-    async function fetchData() {
-      var provider = new ethers.providers.Web3Provider(window.ethereum);
-      var contract = new ethers.Contract(
-        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-        contractJson.abi,
-        provider
-      );
-      var token = await contract.tokenByIndex(tokenid);
-      setUri(await contract.tokenURI(token));
+  const [tokenId, setTokenId] = useState(0);
+
+  const getTokenId = useContractRead(
+    {
+      addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      contractInterface: contractJson.abi,
+    },
+    "tokenByIndex",
+    {
+      args: [id],
     }
-    fetchData();
-  }, [tokenid]);
+  );
+
+  useEffect(() => {
+    if (getTokenId.data) {
+      setTokenId(getTokenId.data);
+    }
+  }, [getTokenId]);
+
+  const contractUriData = useContractRead(
+    {
+      addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      contractInterface: contractJson.abi,
+    },
+    "tokenURI",
+    {
+      args: [tokenId],
+    }
+  );
+
+  useEffect(() => {
+    if (contractUriData.data) {
+      setUri(contractUriData.data);
+    }
+  }, [contractUriData]);
 
   useEffect(() => {
     async function fetchData() {
@@ -57,18 +80,20 @@ const Mint = ({ tokenid }) => {
 export default function LatestMints() {
   const [supply, setSupply] = useState(0);
 
+  const { data, isError, isLoading } = useContractRead(
+    {
+      addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      contractInterface: contractJson.abi,
+    },
+    "totalSupply"
+  );
+
   useEffect(() => {
     async function fetchData() {
-      var provider = new ethers.providers.Web3Provider(window.ethereum);
-      var contract = new ethers.Contract(
-        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-        contractJson.abi,
-        provider
-      );
-      setSupply(ethers.BigNumber.from(await contract.totalSupply()).toNumber());
+      setSupply(ethers.BigNumber.from(data).toNumber());
     }
     fetchData();
-  }, []);
+  }, [data]);
 
   return (
     <Box
@@ -88,8 +113,8 @@ export default function LatestMints() {
         </StatLabel>
         <Divider />
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">
-          {[...Array(supply)].slice(0, 16).map((x, i, array) => (
-            <Mint key={i} tokenid={array.length - 1 - i} />
+          {[...Array(supply)].map((x, i, array) => (
+            <Mint key={i} id={i} />
           ))}
         </SimpleGrid>
       </Stat>
