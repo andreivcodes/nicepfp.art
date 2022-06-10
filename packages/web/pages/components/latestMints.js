@@ -18,7 +18,7 @@ import { useContractRead } from "wagmi";
 const Mint = ({ id }) => {
   const [uri, setUri] = useState("");
   const [img, setImg] = useState("");
-  const [tokenId, setTokenId] = useState(0);
+  const [tokenId, setTokenId] = useState();
 
   const getTokenId = useContractRead(
     {
@@ -116,7 +116,7 @@ export default function LatestMints() {
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">
           {[...Array(supply)].map((x, i, array) => (
             <Center>
-              <Mint key={i} id={i} />
+              <Mint key={array.length - i - 1} id={array.length - i - 1} />
             </Center>
           ))}
         </SimpleGrid>
