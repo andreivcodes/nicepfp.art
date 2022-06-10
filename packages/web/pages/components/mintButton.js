@@ -5,91 +5,18 @@ import contractJson from "../abi/Nicepfp.json";
 import { ethers } from "ethers";
 import { startDrawing } from "../utils/sketch";
 
+import { useAccount, useConnect, useContractWrite } from "wagmi";
+
 export default function MintButton() {
-  const [currentAccount, setCurrentAccount] = useState("");
+  const { data: account } = useAccount();
+  const { connect, connectors, error, isConnecting, pendingConnector } =
+    useConnect();
+
+  const [path, setPath] = useState();
+  const [signature, setSignature] = useState();
+
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  });
-
-  const checkIfWalletIsConnected = async () => {
-    const { ethereum } = window;
-
-    await switchNetwork();
-    const accounts = await ethereum.request({ method: "eth_accounts" });
-
-    if (accounts.length !== 0) {
-      const account = accounts[0];
-      setCurrentAccount(account);
-    }
-  };
-
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-      if (!ethereum) {
-        toast({
-          title: "Error",
-          description: `Make sure you have Metamask`,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      await switchNetwork();
-
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      setCurrentAccount(accounts[0]);
-
-      toast({
-        title: "Connected",
-        description: `Connected as ${accounts[0]}.`,
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const switchNetwork = async () => {
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x89" }],
-      });
-    } catch (error) {
-      if (error.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: "0x89",
-                chainName: "Polygon Mainnet",
-                rpcUrls: ["https://rpc-mainnet.matic.quiknode.pro"],
-                nativeCurrency: {
-                  name: "MATIC",
-                  symbol: "MATIC",
-                  decimals: 18,
-                },
-              },
-            ],
-          });
-        } catch (error) {
-          alert(error.message);
-        }
-      }
-    }
-  };
 
   function dataURLtoFile(dataurl, filename) {
     var arr = dataurl.split(","),
@@ -103,32 +30,15 @@ export default function MintButton() {
     return new File([u8arr], filename, { type: mime });
   }
 
-  const mint = async () => {
-    var file = dataURLtoFile(captureFrame(), "file.png");
-
-    setLoading(true);
-    const body = new FormData();
-    body.append("file", file);
-    fetch("/api/getipfs", {
-      method: "POST",
-      body,
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        var provider = new ethers.providers.Web3Provider(window.ethereum);
-        var signer = provider.getSigner();
-        var contract = new ethers.Contract(
-          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-          contractJson.abi,
-          provider
-        );
-
-        var tx = await contract
-          .connect(signer)
-          .safeMint(signer.getAddress(), data.path, data.signature);
-
-        await tx.wait(1);
-
+  const contractMint = useContractWrite(
+    {
+      addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      contractInterface: contractJson.abi,
+    },
+    "safeMint",
+    {
+      args: [account ? account.address : null, path, signature],
+      onSuccess(data) {
         toast({
           title: "Minted",
           description: `Successfuly minted a pfp.`,
@@ -138,20 +48,48 @@ export default function MintButton() {
         });
         setLoading(false);
         startDrawing();
-      });
-  };
+      },
+      onError() {
+        setLoading(false);
+        startDrawing();
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (path && signature) contractMint.write();
+  }, [path, signature]);
 
   return (
     <Box w="100%">
-      {currentAccount === "" ? (
-        <Button colorScheme="purple" w="100%" onClick={connectWallet}>
+      {!account ? (
+        <Button
+          colorScheme="purple"
+          w="100%"
+          onClick={() => connect(connectors[0])}
+        >
           Connect to Wallet
         </Button>
       ) : loading === false ? (
         <Button
           colorScheme="purple"
           w="100%"
-          onClick={mint}
+          onClick={() => {
+            var file = dataURLtoFile(captureFrame(), "file.png");
+
+            setLoading(true);
+            const body = new FormData();
+            body.append("file", file);
+            fetch("/api/getipfs", {
+              method: "POST",
+              body,
+            })
+              .then((response) => response.json())
+              .then(async (data) => {
+                setPath(data.path);
+                setSignature(data.signature);
+              });
+          }}
           fontFamily="Spartan"
           fontSize="sm"
         >
@@ -161,7 +99,6 @@ export default function MintButton() {
         <Button
           colorScheme="purple"
           w="100%"
-          onClick={mint}
           fontFamily="Spartan"
           fontSize="sm"
           disabled
