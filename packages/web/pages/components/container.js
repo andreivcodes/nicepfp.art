@@ -7,6 +7,7 @@ import {
   useColorModeValue,
   Code,
   Divider,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 
@@ -24,24 +25,6 @@ import { useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
 
 export default function Container() {
-  const toast = useToast();
-  useEffect(() => {
-    if (window.innerWidth < 512)
-      toast({
-        position: "top-left",
-        render: () => (
-          <Box
-            color="white"
-            p={3}
-            bg="orange.500"
-            maxW={window.innerWidth * 0.9}
-          >
-            Please use landscape orientation on small screens.
-          </Box>
-        ),
-      });
-  }, []);
-
   return (
     <Flex
       flexDirection={"column"}
@@ -59,9 +42,7 @@ export default function Container() {
           alignItems="stretch"
           justifyItems="center"
         >
-          <Box>
-            <DrawSheet />
-          </Box>
+          <DrawSheet />
 
           <Flex justifyContent="center" flexDirection="column">
             <Text

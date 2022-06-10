@@ -7,6 +7,7 @@ import {
   useColorModeValue,
   SimpleGrid,
   Link,
+  Center,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
@@ -114,7 +115,9 @@ export default function LatestMints() {
         <Divider />
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">
           {[...Array(supply)].map((x, i, array) => (
-            <Mint key={i} id={i} />
+            <Center>
+              <Mint key={i} id={i} />
+            </Center>
           ))}
         </SimpleGrid>
       </Stat>

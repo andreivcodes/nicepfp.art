@@ -1,4 +1,11 @@
-import { Box, Button, useColorModeValue, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  useColorModeValue,
+  useBreakpointValue,
+  Flex,
+  Text,
+} from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
 import MintButton from "./mintButton";
 import { setup, draw, startDrawing } from "../utils/sketch";
@@ -8,6 +15,7 @@ const Sketch = dynamic(() => import("react-p5"), { ssr: false });
 const isServer = () => typeof window === "undefined";
 
 export default function DrawSheet() {
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   return (
     <Box
       w="min"
@@ -19,19 +27,29 @@ export default function DrawSheet() {
     >
       {!isServer() && (
         <div>
-          <Sketch setup={setup} draw={draw} />
-          <Flex justifyContent="end">
-            <Button
-              colorScheme="purple"
-              variant="outline"
-              mt={3}
-              fontFamily="Spartan"
-              fontSize="sm"
-              onClick={startDrawing}
-            >
-              <RepeatIcon variant="outline" /> {"\xa0 Redraw"}
-            </Button>
-          </Flex>
+          {isMobile ? (
+            <Text fontWeight="thin" textAlign="center" fontFamily="Spartan">
+              Can't draw on small screens, sorry. Try using nicepfp.art on
+              desktop.
+            </Text>
+          ) : (
+            <div>
+              <Sketch setup={setup} draw={draw} />
+              <Flex justifyContent="end">
+                <Button
+                  colorScheme="purple"
+                  variant="outline"
+                  mt={3}
+                  fontFamily="Spartan"
+                  fontSize="sm"
+                  onClick={startDrawing}
+                >
+                  <RepeatIcon variant="outline" /> {"\xa0 Redraw"}
+                </Button>
+              </Flex>
+            </div>
+          )}
+
           <Flex
             h="100%"
             justifyContent="top"
