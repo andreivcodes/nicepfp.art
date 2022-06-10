@@ -106,7 +106,7 @@ export default function LatestMints() {
     >
       <Stat>
         <StatLabel m={2} fontFamily="Spartan" fontWeight="bold">
-          Latest mints -{" "}
+          {supply} very nice pfps -{" "}
           <Link href="https://opensea.io/collection/nicepfp-art" isExternal>
             View OpenSea collection
             <ExternalLinkIcon mx="2px" />
