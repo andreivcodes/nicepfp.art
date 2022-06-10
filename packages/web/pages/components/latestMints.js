@@ -115,8 +115,8 @@ export default function LatestMints() {
         <Divider />
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">
           {[...Array(supply)].map((x, i, array) => (
-            <Center>
-              <Mint key={i} id={array.length - i - 1} />
+            <Center key={array.length - i - 1}>
+              <Mint key={array.length - i - 1} id={array.length - i - 1} />
             </Center>
           ))}
         </SimpleGrid>
