@@ -1,7 +1,9 @@
 import { create } from "ipfs-http-client";
 import formidable from "formidable";
 import fs from "fs";
+import { pathToFileURL } from "url";
 const EthCrypto = require("eth-crypto");
+const Vibrant = require("node-vibrant");
 
 const authkey =
   "Basic " +
@@ -33,25 +35,34 @@ const post = async (req, res) => {
 
     const img = fs.readFileSync(file.filepath);
 
-    const imageIPFS = await client.add(img);
-    let jsonObj = {
-      name: `nicepfp`,
-      description: `A very nice pfp created using nicepfp.art`,
-      image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
-    };
-    const jsonIPFS = await client.add(JSON.stringify(jsonObj));
+    Vibrant.from(file.filepath)
+      .getPalette()
+      .then(async (palette) => {
+        if (
+          JSON.stringify(palette.Vibrant) ==
+          `{"rgb":[127.5,127.5,127.5],"population":0}`
+        ) {
+          const imageIPFS = await client.add(img);
+          let jsonObj = {
+            name: `nicepfp`,
+            description: `A very nice pfp created using nicepfp.art`,
+            image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+          };
+          const jsonIPFS = await client.add(JSON.stringify(jsonObj));
 
-    const message = EthCrypto.hash.keccak256([
-      { type: "string", value: jsonIPFS.path },
-    ]);
-    const signature = EthCrypto.sign(hexPrivateKey, message);
+          const message = EthCrypto.hash.keccak256([
+            { type: "string", value: jsonIPFS.path },
+          ]);
+          const signature = EthCrypto.sign(hexPrivateKey, message);
 
-    var response = {
-      path: jsonIPFS.path,
-      signature: signature,
-    };
-    console.log(response);
-    return res.status(200).json(response);
+          var response = {
+            path: jsonIPFS.path,
+            signature: signature,
+          };
+          console.log(response);
+          return res.status(200).json(response);
+        }
+      });
   });
 };
 
