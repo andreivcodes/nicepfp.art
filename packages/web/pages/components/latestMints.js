@@ -8,6 +8,7 @@ import {
   SimpleGrid,
   Link,
   Center,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
@@ -19,6 +20,7 @@ const Mint = ({ id }) => {
   const [uri, setUri] = useState("");
   const [img, setImg] = useState("");
   const [tokenId, setTokenId] = useState();
+  const [loading, setLoading] = useState(true);
 
   const getTokenId = useContractRead(
     {
@@ -62,19 +64,16 @@ const Mint = ({ id }) => {
           .then((responseJson) => {
             if (responseJson.animation_url) setImg(responseJson.animation_url);
             else setImg(responseJson.image);
+            setLoading(false);
           });
     }
     fetchData();
   }, [uri]);
 
   return (
-    <Image
-      src={img}
-      alt=""
-      borderRadius="full"
-      boxSize="150px"
-      fallbackSrc="https://via.placeholder.com/150"
-    />
+    <Skeleton isLoaded={!loading}>
+      <Image src={img} alt="" borderRadius="full" boxSize="150px" />
+    </Skeleton>
   );
 };
 
