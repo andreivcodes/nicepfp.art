@@ -19,7 +19,7 @@ export const captureFrame = () => {
 export const setup = (_p5, canvasParentRef) => {
   if (!isServer()) ml5 = require("ml5");
   p5 = _p5;
-  model = ml5.sketchRNN("face");
+  model = ml5.sketchRNN(window.location.origin + "/face.gen.json");
   cnv = p5.createCanvas(512, 512).parent(canvasParentRef);
   p5.background(255);
 
