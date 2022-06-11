@@ -5,12 +5,13 @@ import contractJson from "../abi/Nicepfp.json";
 import { ethers } from "ethers";
 import { startDrawing } from "../utils/sketch";
 
-import { useAccount, useConnect, useContractWrite } from "wagmi";
+import { useAccount, useConnect, useContractWrite, useNetwork } from "wagmi";
 
 export default function MintButton() {
   const { data: account } = useAccount();
-  const { connect, connectors, error, isConnecting, pendingConnector } =
-    useConnect();
+  const { connect, connectors } = useConnect();
+  const { activeChain, chains, isLoading, pendingChainId, switchNetwork } =
+    useNetwork();
 
   const [path, setPath] = useState();
   const [signature, setSignature] = useState();
@@ -38,7 +39,7 @@ export default function MintButton() {
     "safeMint",
     {
       args: [account ? account.address : null, path, signature],
-      onSuccess(data) {
+      onSuccess() {
         toast({
           title: "Minted",
           description: `Successfuly minted a pfp.`,
@@ -55,6 +56,29 @@ export default function MintButton() {
       },
     }
   );
+
+  useEffect(() => {
+    if (activeChain && activeChain.id != 137) {
+      console.log(chains);
+      if (
+        chains.find((chian) => {
+          return chian.id === 137;
+        })
+      ) {
+        switchNetwork(137);
+        setLoading(false);
+      } else {
+        toast({
+          title: "Wrong network",
+          description: `Can not find Polygon in your networks list.`,
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+        });
+        setLoading(true);
+      }
+    }
+  }, [activeChain]);
 
   useEffect(() => {
     if (path && signature) contractMint.write();
