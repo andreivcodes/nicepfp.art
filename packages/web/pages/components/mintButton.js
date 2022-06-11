@@ -99,6 +99,17 @@ export default function MintButton() {
           colorScheme="purple"
           w="100%"
           onClick={() => {
+            if (activeChain && activeChain.id != 137) {
+              toast({
+                title: "Wrong network",
+                description: `Please switch to Polygon.`,
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+              });
+              return;
+            }
+
             var file = dataURLtoFile(captureFrame(), "file.png");
 
             setLoading(true);
