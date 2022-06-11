@@ -7,7 +7,6 @@ import {
   SimpleGrid,
   Link,
   Center,
-  Skeleton,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Image from "next/image";
@@ -71,19 +70,17 @@ const Mint = ({ id }) => {
   }, [uri]);
 
   return (
-    <Skeleton isLoaded={!loading}>
-      <Image
-        src={img}
-        alt=""
-        width="150px"
-        height="150px"
-        borderRadius="full"
-        boxSize="150px"
-        onError={() => {
-          setImg("https://via.placeholder.com/150");
-        }}
-      />
-    </Skeleton>
+    <Image
+      src={img}
+      alt=""
+      layout="fixed"
+      width={150}
+      height={150}
+      borderRadius="full"
+      boxSize="150px"
+      placeholder="blur"
+      blurDataURL="https://via.placeholder.com/150"
+    />
   );
 };
 
