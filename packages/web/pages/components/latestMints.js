@@ -2,7 +2,6 @@ import {
   Box,
   Stat,
   StatLabel,
-  Image,
   Divider,
   useColorModeValue,
   SimpleGrid,
@@ -11,6 +10,7 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractJson from "../abi/Nicepfp.json";
@@ -18,7 +18,7 @@ import { useContractRead } from "wagmi";
 
 const Mint = ({ id }) => {
   const [uri, setUri] = useState("");
-  const [img, setImg] = useState("");
+  const [img, setImg] = useState("https://via.placeholder.com/150");
   const [tokenId, setTokenId] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +72,14 @@ const Mint = ({ id }) => {
 
   return (
     <Skeleton isLoaded={!loading}>
-      <Image src={img} alt="" borderRadius="full" boxSize="150px" />
+      <Image
+        src={img}
+        alt=""
+        width={150}
+        height={150}
+        borderRadius="full"
+        boxSize="150px"
+      />
     </Skeleton>
   );
 };
