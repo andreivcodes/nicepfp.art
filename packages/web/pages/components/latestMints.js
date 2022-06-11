@@ -79,6 +79,9 @@ const Mint = ({ id }) => {
         height={150}
         borderRadius="full"
         boxSize="150px"
+        onError={() => {
+          setImg("https://via.placeholder.com/150");
+        }}
       />
     </Skeleton>
   );
