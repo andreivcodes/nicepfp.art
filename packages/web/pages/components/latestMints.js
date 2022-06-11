@@ -75,8 +75,8 @@ const Mint = ({ id }) => {
       <Image
         src={img}
         alt=""
-        width={150}
-        height={150}
+        width="150px"
+        height="150px"
         borderRadius="full"
         boxSize="150px"
         onError={() => {
