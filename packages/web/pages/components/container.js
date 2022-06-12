@@ -7,6 +7,7 @@ import {
   Code,
   Divider,
   Skeleton,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 
@@ -27,6 +28,7 @@ const DrawSheet = dynamic(() => import("./drawSheet"), {
 });
 
 export default function Container() {
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   return (
     <Flex
       flexDirection={"column"}
@@ -44,17 +46,27 @@ export default function Container() {
           alignItems="stretch"
           justifyItems="center"
         >
-          <DrawSheet />
+          {isMobile ? (
+            <Center>
+              <DrawSheet />
+            </Center>
+          ) : (
+            <DrawSheet />
+          )}
 
           <Flex justifyContent="center" flexDirection="column">
             <Text
-              fontSize="5xl"
+              fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
               fontWeight="thin"
               textAlign="right"
               fontFamily="Spartan"
             >
               Welcome to{" "}
-              <Code fontSize="5xl" colorScheme="purple" fontFamily="Spartan">
+              <Code
+                fontSize={useBreakpointValue({ base: "4xl", md: "5xl" })}
+                colorScheme="purple"
+                fontFamily="Spartan"
+              >
                 nicepfp.art
               </Code>
             </Text>
