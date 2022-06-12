@@ -8,7 +8,7 @@ import {
   SimpleGrid,
   Link,
   Center,
-  Spinner,
+  Button,
   Skeleton,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -91,7 +91,8 @@ const Mint = ({ id }) => {
 };
 
 export default function LatestMints() {
-  const [supply, setSupply] = useState();
+  const [supply, setSupply] = useState(0);
+  const [maxItems, setMaxItems] = useState(12);
 
   const { data } = useContractRead(
     {
@@ -126,12 +127,24 @@ export default function LatestMints() {
         </StatLabel>
         <Divider />
         <SimpleGrid minChildWidth="150px" padding="5" spacing="5">
-          {[...Array(supply)].map((x, i, array) => (
-            <Center key={array.length - i - 1}>
-              <Mint key={array.length - i - 1} id={array.length - i - 1} />
+          {[...Array(supply)].slice(0, maxItems).map((x, i) => (
+            <Center key={supply - i - 1}>
+              <Mint id={supply - i - 1} />
             </Center>
           ))}
         </SimpleGrid>
+        <Center>
+          <Button
+            variant="outline"
+            colorScheme="purple"
+            isDisabled={maxItems >= supply ? true : false}
+            onClick={() => {
+              setMaxItems(maxItems + 12);
+            }}
+          >
+            Load more
+          </Button>
+        </Center>
       </Stat>
     </Box>
   );
