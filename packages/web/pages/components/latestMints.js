@@ -1,5 +1,6 @@
 import {
   Box,
+  Flex,
   Stat,
   StatLabel,
   Divider,
@@ -7,6 +8,8 @@ import {
   SimpleGrid,
   Link,
   Center,
+  Spinner,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Image from "next/image";
@@ -16,10 +19,9 @@ import contractJson from "../abi/Nicepfp.json";
 import { useContractRead } from "wagmi";
 
 const Mint = ({ id }) => {
-  const [uri, setUri] = useState("");
-  const [img, setImg] = useState("https://via.placeholder.com/150");
+  const [uri, setUri] = useState();
+  const [img, setImg] = useState();
   const [tokenId, setTokenId] = useState();
-  const [loading, setLoading] = useState(true);
 
   const getTokenId = useContractRead(
     {
@@ -63,31 +65,35 @@ const Mint = ({ id }) => {
           .then((responseJson) => {
             if (responseJson.animation_url) setImg(responseJson.animation_url);
             else setImg(responseJson.image);
-            setLoading(false);
           });
     }
     fetchData();
   }, [uri]);
 
   return (
-    <Image
-      src={img}
-      alt=""
-      layout="fixed"
-      width={150}
-      height={150}
-      borderRadius="full"
-      boxSize="150px"
-      placeholder="blur"
-      blurDataURL="https://via.placeholder.com/150"
-    />
+    <div>
+      {img ? (
+        <Image
+          src={img}
+          alt="one of the minted images"
+          layout="fixed"
+          width={150}
+          height={150}
+          placeholder="blur"
+          blurDataURL={img}
+          quality="30"
+        />
+      ) : (
+        <Skeleton width={150} height={150} />
+      )}
+    </div>
   );
 };
 
 export default function LatestMints() {
-  const [supply, setSupply] = useState(0);
+  const [supply, setSupply] = useState();
 
-  const { data, isError, isLoading } = useContractRead(
+  const { data } = useContractRead(
     {
       addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       contractInterface: contractJson.abi,

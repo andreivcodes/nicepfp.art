@@ -2,12 +2,11 @@ import {
   Text,
   Flex,
   SimpleGrid,
-  Box,
   Center,
   useColorModeValue,
   Code,
   Divider,
-  useBreakpointValue,
+  Skeleton,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 
@@ -18,11 +17,14 @@ import Card3 from "./card3";
 import Card4 from "./card4";
 import Card5 from "./card5";
 import Card6 from "./card6";
-const LatestMints = dynamic(() => import("./latestMints"), { ssr: false });
-const DrawSheet = dynamic(() => import("./drawSheet"), { ssr: false });
-
-import { useEffect } from "react";
-import { useToast } from "@chakra-ui/react";
+const LatestMints = dynamic(() => import("./latestMints"), {
+  ssr: false,
+  loading: () => <Skeleton h="50px" w="100%"></Skeleton>,
+});
+const DrawSheet = dynamic(() => import("./drawSheet"), {
+  ssr: false,
+  loading: () => <Skeleton h="500px" w="500px"></Skeleton>,
+});
 
 export default function Container() {
   return (

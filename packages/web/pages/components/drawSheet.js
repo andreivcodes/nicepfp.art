@@ -5,6 +5,7 @@ import {
   useBreakpointValue,
   Flex,
   Text,
+  Skeleton,
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
 import MintButton from "./mintButton";
@@ -18,8 +19,6 @@ export default function DrawSheet() {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   return (
     <Box
-      w="min"
-      h="min"
       boxShadow="base"
       p={3}
       rounded="md"
@@ -34,7 +33,9 @@ export default function DrawSheet() {
             </Text>
           ) : (
             <div>
-              <Sketch setup={setup} draw={draw} />
+              <Skeleton minW="500px" minH="500px" isLoaded>
+                <Sketch setup={setup} draw={draw} />
+              </Skeleton>
               <Flex justifyContent="end">
                 <Button
                   colorScheme="purple"
@@ -52,7 +53,7 @@ export default function DrawSheet() {
 
           <Flex
             h="100%"
-            justifyContent="top"
+            justifyContent="bottom"
             w="100%"
             flexDirection="column"
             mt={3}
