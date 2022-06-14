@@ -117,6 +117,9 @@ export default function MintButton() {
             body.append("file", file);
             fetch("/api/getipfs", {
               method: "POST",
+              headers: new Headers({
+                Authorization: process.env.NEXT_PUBLIC_AUTH_ROLE,
+              }),
               body,
             })
               .then((response) => response.json())
