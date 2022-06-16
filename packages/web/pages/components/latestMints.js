@@ -104,7 +104,7 @@ export default function LatestMints() {
 
   useEffect(() => {
     async function fetchData() {
-      setSupply(ethers.BigNumber.from(data).toNumber());
+      setSupply(await ethers.BigNumber.from(data).toNumber());
     }
     fetchData();
   }, [data]);

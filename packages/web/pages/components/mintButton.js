@@ -87,13 +87,16 @@ export default function MintButton() {
   return (
     <Box w="100%">
       {!account ? (
-        <Button
-          colorScheme="purple"
-          w="100%"
-          onClick={() => connect(connectors[0])}
-        >
-          Connect to Wallet
-        </Button>
+        connectors.map((x) => (
+          <Button
+            mt="0.5rem"
+            colorScheme="purple"
+            w="100%"
+            onClick={() => connect(x)}
+          >
+            Connect {x.name}
+          </Button>
+        ))
       ) : loading === false ? (
         <Button
           colorScheme="purple"
