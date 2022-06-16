@@ -89,6 +89,7 @@ export default function MintButton() {
       {!account ? (
         connectors.map((x) => (
           <Button
+            key={x.name}
             mt="0.5rem"
             colorScheme="purple"
             w="100%"
