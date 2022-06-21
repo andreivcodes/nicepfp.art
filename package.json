@@ -13,7 +13,7 @@
     "dev": "concurrently  \"yarn hardhat\" \"yarn web-dev\""
   },
   "devDependencies": {
-    "concurrently": "^7.2.0",
+    "concurrently": "^7.2.2",
     "yarn-upgrade-all": "^0.7.1"
   }
 }
