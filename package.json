@@ -1,13 +1,12 @@
 {
-  "packageManager": "yarn@3.2.1",
   "private": true,
   "name": "nicepfp",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "web": "yarn workspace web build && yarn workspace web start",
-    "web-dev": "yarn workspace web dev",
+    "web": "yarn workspace web-ts build && yarn workspace web-ts start",
+    "web-dev": "yarn workspace web-ts dev",
     "hardhat": "yarn workspace hardhat dev",
     "start": "concurrently  \"yarn hardhat\" \"yarn web\"",
     "dev": "concurrently  \"yarn hardhat\" \"yarn web-dev\""
