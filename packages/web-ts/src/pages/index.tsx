@@ -210,7 +210,7 @@ const Showcase = () => {
         ))}
       </div>
       <button
-        className="rounded bg-purple-500 py-2 px-4 font-bold text-white hover:bg-purple-700"
+        className="rounded bg-purple-500 py-2 px-4 font-bold text-white hover:bg-purple-700 active:bg-purple-600"
         onClick={() => {
           setMaxItems(maxItems + 12);
         }}
