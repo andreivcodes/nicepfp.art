@@ -46,8 +46,8 @@ const Welcome = () => {
   return (
     <div className="flex flex-col items-end">
       <div className="flex flex-col items-end">
-        <p className="text-[96px] font-bold text-gray-800">Welcome to </p>
-        <p className="bg-purple-200 text-[96px] font-light text-purple-800">
+        <p className="text-[96px] font-extrabold text-gray-800">Welcome to </p>
+        <p className="bg-purple-200 text-[96px] font-extralight text-purple-800">
           nicepfp.art
         </p>
       </div>
