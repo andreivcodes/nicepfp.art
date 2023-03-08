@@ -28,10 +28,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <WagmiConfig client={client}>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-        <Analytics />
-      </SessionProvider>
+      <Component {...pageProps} />
+      <Analytics />
     </WagmiConfig>
   );
 };
