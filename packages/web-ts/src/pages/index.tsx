@@ -190,7 +190,7 @@ const Showcase = () => {
   });
 
   useEffect(() => {
-    setSupply(Number(totalSupply.data));
+    if (totalSupply.isSuccess) setSupply(Number(totalSupply.data));
   }, [totalSupply]);
 
   return (
