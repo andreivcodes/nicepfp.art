@@ -7,6 +7,7 @@ import { useContractRead } from "wagmi";
 import contractJson from "../abi/nicepfp.json";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import InfiniteScroll from "react-infinite-scroller";
 
 const DrawSheet = dynamic(() => import("./components/Container"), {
   ssr: false,
@@ -204,20 +205,21 @@ const Showcase = () => {
           View OpenSea collection
         </Link>
       </span>
-      <div className="grid grid-cols-6 gap-4">
-        {supply &&
-          [...Array(supply)]
-            .slice(0, maxItems)
-            .map((x, i) => <Mint key={supply - i - 1} id={supply - i - 1} />)}
-      </div>
-      <button
-        className="rounded bg-purple-500 py-2 px-4 font-bold text-white hover:bg-purple-700 active:bg-purple-600"
-        onClick={() => {
-          setMaxItems(maxItems + 12);
+
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={() => {
+          if (maxItems < supply) setMaxItems(maxItems + 24);
         }}
+        hasMore={true || false}
       >
-        Load more
-      </button>
+        <div className="grid grid-cols-6 gap-4">
+          {supply &&
+            [...Array(supply)]
+              .slice(0, maxItems)
+              .map((x, i) => <Mint key={supply - i - 1} id={supply - i - 1} />)}
+        </div>
+      </InfiniteScroll>
     </div>
   );
 };
