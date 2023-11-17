@@ -13,7 +13,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
 const { chains, provider } = configureChains(
   [polygon],
-  [infuraProvider({ apiKey: "af33f32b580f4c4485f51a82ad8ba578" })]
+  [infuraProvider({ apiKey: "d016860a553a488dbeef68617d54acdc" })]
 );
 
 const client = createClient({

@@ -233,20 +233,20 @@ const Mint = (props: { id: number }) => {
   });
 
   const [image, setImage] = useState(
-    "https://nicepfp.infura-ipfs.io/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7"
+    "https://cloudflare-ipfs.com/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7"
   );
 
   useEffect(() => {
     if (getTokenUri.data) {
       fetch(
-        `https://nicepfp.infura-ipfs.io/ipfs/${(
-          getTokenUri.data as string
-        ).slice(21)}`
+        `https://cloudflare-ipfs.com/ipfs/${(getTokenUri.data as string).slice(
+          21
+        )}`
       )
         .then((response) => response.json())
         .then((data) => {
           setImage(
-            `https://nicepfp.infura-ipfs.io/ipfs/${(data.image as string).slice(
+            `https://cloudflare-ipfs.com/ipfs/${(data.image as string).slice(
               21
             )}`
           );

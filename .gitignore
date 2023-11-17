@@ -4,3 +4,4 @@ packages/hardhat/yarn-error.log
 packages/web/.env
 packages/.DS_Store
 .DS_Store
+.env

@@ -15,7 +15,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["nicepfp.infura-ipfs.io"],
+    domains: ["nicepfp.infura-ipfs.io", "cloudflare-ipfs.com"],
   },
 };
 export default config;
