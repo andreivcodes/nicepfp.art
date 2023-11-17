@@ -22,7 +22,7 @@ export default function Container() {
         <div className="relative h-[540px] w-[540px] rounded-md border border-gray-100 bg-white drop-shadow-sm">
           <Sketch setup={setup} draw={draw} />
           <button
-            className="text-whiteactive:bg-violet-700 absolute right-4 bottom-4 rounded bg-purple-500 py-2 px-2 font-bold hover:bg-purple-700 active:bg-purple-600"
+            className="text-whiteactive:bg-violet-700 absolute bottom-4 right-4 rounded bg-purple-500 px-2 py-2 font-bold hover:bg-purple-700 active:bg-purple-600"
             onClick={() => {
               startDrawing();
             }}
@@ -51,6 +51,7 @@ const MintButton = () => {
     functionName: "safeMint",
     args: [address, path, signature],
     enabled: true,
+    chainId: 137,
   });
   const contractWrite = useContractWrite(config);
   const [loading, setLoading] = useState(false);

@@ -230,25 +230,26 @@ const Mint = (props: { id: number }) => {
     abi: contractJson.abi,
     functionName: "tokenURI",
     args: [props.id],
+    chainId: 137,
   });
 
   const [image, setImage] = useState(
-    "https://cloudflare-ipfs.com/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7"
+    "https://cloudflare-ipfs.com/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7",
   );
 
   useEffect(() => {
     if (getTokenUri.data) {
       fetch(
         `https://cloudflare-ipfs.com/ipfs/${(getTokenUri.data as string).slice(
-          21
-        )}`
+          21,
+        )}`,
       )
         .then((response) => response.json())
         .then((data) => {
           setImage(
             `https://cloudflare-ipfs.com/ipfs/${(data.image as string).slice(
-              21
-            )}`
+              21,
+            )}`,
           );
         });
     }

@@ -8,13 +8,17 @@ import "~/styles/globals.css";
 
 import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { polygon } from "wagmi/chains";
-import { infuraProvider } from "wagmi/providers/infura";
+import { publicProvider } from "wagmi/providers/public";
+import { InjectedConnector } from "wagmi/connectors/injected";
 
-const { publicClient, webSocketPublicClient } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [polygon],
-  [infuraProvider({ apiKey: "d016860a553a488dbeef68617d54acdc" })]
+  [publicProvider()],
 );
+
 const config = createConfig({
+  connectors: [new InjectedConnector({ chains })],
+  autoConnect: true,
   publicClient,
   webSocketPublicClient,
 });
