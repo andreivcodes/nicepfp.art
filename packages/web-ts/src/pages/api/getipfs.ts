@@ -1,9 +1,9 @@
 import { create } from "ipfs-http-client";
-import formidable from "formidable";
 import fs from "fs";
 import EthCrypto from "eth-crypto";
 import Vibrant from "node-vibrant";
 import { NextApiRequest, NextApiResponse } from "next";
+import formidable from "formidable";
 
 const authkey =
   "Basic " +
@@ -29,13 +29,17 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  const form = new formidable.IncomingForm();
+  const form = formidable({});
+  
   form.parse(req, async function (err, fields, files) {
-    const file = files.file;
+    
+    if (!files || !files.file || files.file.length === 0) return;
 
-    if (!file || Array.isArray(file)) return;
+    const file = files.file[0];
+    
+    if (!file) return;
 
-    const img = fs.readFileSync(file?.filepath);
+    const img = fs.readFileSync(file.filepath);
 
     Vibrant.from(file.filepath)
       .getPalette()

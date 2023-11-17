@@ -6,25 +6,22 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 
-import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { polygon } from "wagmi/chains";
 import { infuraProvider } from "wagmi/providers/infura";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
-const { chains, provider } = configureChains(
+const { publicClient, webSocketPublicClient } = configureChains(
   [polygon],
   [infuraProvider({ apiKey: "d016860a553a488dbeef68617d54acdc" })]
 );
-
-const client = createClient({
-  autoConnect: true,
-  connectors: [new MetaMaskConnector({ chains })],
-  provider,
+const config = createConfig({
+  publicClient,
+  webSocketPublicClient,
 });
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig config={config}>
       <Component {...pageProps} />
       <Analytics />
     </WagmiConfig>
