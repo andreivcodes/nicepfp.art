@@ -258,7 +258,7 @@ const Mint = (props: { id: number }) => {
   }, [getTokenUri]);
 
   return (
-    <div className="w-fit rounded-md border shadow-md">
+    <div className="w-fit rounded-sm border shadow-md">
       <Image src={image} width={150} height={150} alt={""} />
     </div>
   );
