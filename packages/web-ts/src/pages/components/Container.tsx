@@ -18,8 +18,8 @@ const isServer = () => typeof window === "undefined";
 export default function Container() {
   if (!isServer())
     return (
-      <div className="items-center w-fit p-4 lg:p-0 flex flex-col gap-4">
-        <div className="relative h-[350px] w-[350px] lg:h-[540px] lg:w-[540px] rounded-md border border-gray-100 bg-white drop-shadow-sm">
+      <div className="flex w-fit flex-col items-center gap-4 p-4 lg:p-0">
+        <div className="relative h-[350px] w-[350px] rounded-md border border-gray-100 bg-white drop-shadow-sm lg:h-[540px] lg:w-[540px]">
           <Sketch setup={setup} draw={draw} />
           <button
             className="text-whiteactive:bg-violet-700 absolute bottom-4 right-4 rounded bg-purple-500 px-2 py-2 font-bold hover:bg-purple-700 active:bg-purple-600"
@@ -80,7 +80,7 @@ const MintButton = () => {
       <div className="w-full">
         {connectors.map((connector) => (
           <button
-            className="w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700 active:bg-purple-600 w-full"
+            className="w-full w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700 active:bg-purple-600"
             disabled={!connector.ready}
             key={connector.id}
             onClick={() => connect({ connector })}
@@ -99,7 +99,7 @@ const MintButton = () => {
 
   return (
     <button
-      className="rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700 w-full"
+      className="w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700"
       disabled={loading}
       onClick={() => {
         setLoading(true);

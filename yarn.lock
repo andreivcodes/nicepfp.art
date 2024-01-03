@@ -2010,28 +2010,6 @@
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
   integrity sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==
 
-"@trpc/client@^10.43.4":
-  version "10.43.4"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.43.4.tgz#3cf6e9cf55065d1614f9abb3671dd3d3f2105a16"
-  integrity sha512-no9B4OLoNhWz31alVpBzmbluoo67saTaegPyKZvNzsi15oVXIHnaUfy6OI5croM7+URC/SSpbWzknGAEr04iEw==
-
-"@trpc/next@^10.43.4":
-  version "10.43.4"
-  resolved "https://registry.yarnpkg.com/@trpc/next/-/next-10.43.4.tgz#f71e0636c0ce46a8948bdbfd7b071c78d103fc62"
-  integrity sha512-d8W2y+EO8VsH8b4x7PYhwZvr/mxhIRpDHyZKhacBgqogPMAN+dLfknnY8gGTUUOmJW+r28wFGEmztzi7trKh5Q==
-  dependencies:
-    react-ssr-prepass "^1.5.0"
-
-"@trpc/react-query@^10.43.4":
-  version "10.43.4"
-  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-10.43.4.tgz#608f1519c43f27247c2872d87a1aef533067d687"
-  integrity sha512-HX51DgpcNXZz9GHgxclEPA0ju6PiyN2Gc4eBQ3K6NIEdXJEIs2RTXp+8hE+aTBAbbav9N6yXMW6M75lpC5UTrA==
-
-"@trpc/server@^10.43.4":
-  version "10.43.4"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.43.4.tgz#c49c23e3b4572fb73f910663bc52b8e5ab942d46"
-  integrity sha512-PySqtDKf3pVXBnPLiL7Q3CNXYFV3S6VrZRTFctnsrLEcQ3wOCLZSfKMwx2uHleZV/bwzSOtUJTZYolqY5JTDmQ==
-
 "@trufflesuite/bigint-buffer@1.1.10":
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/@trufflesuite/bigint-buffer/-/bigint-buffer-1.1.10.tgz#a1d9ca22d3cad1a138b78baaf15543637a3e1692"
@@ -8348,11 +8326,6 @@ react-p5@^1.3.33:
     "@types/p5" "1.3.3"
     opencollective-postinstall "2.0.2"
     p5 "1.3.1"
-
-react-ssr-prepass@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-ssr-prepass/-/react-ssr-prepass-1.5.0.tgz#bc4ca7fcb52365e6aea11cc254a3d1bdcbd030c5"
-  integrity sha512-yFNHrlVEReVYKsLI5lF05tZoHveA5pGzjFbFJY/3pOqqjGOmMmqx83N4hIjN2n6E1AOa+eQEUxs3CgRnPmT0RQ==
 
 react@18.2.0:
   version "18.2.0"

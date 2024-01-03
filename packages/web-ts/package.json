@@ -10,10 +10,6 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.0.0",
-    "@trpc/client": "^10.43.4",
-    "@trpc/next": "^10.43.4",
-    "@trpc/react-query": "^10.43.4",
-    "@trpc/server": "^10.43.4",
     "@vercel/analytics": "^1.1.1",
     "eth-crypto": "^2.6.0",
     "ethers": "6.8.1",

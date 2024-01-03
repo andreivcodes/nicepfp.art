@@ -2,8 +2,6 @@ import React from "react";
 import { type AppType } from "next/app";
 import { Analytics } from "@vercel/analytics/react";
 
-import { api } from "~/utils/api";
-
 import "~/styles/globals.css";
 
 import { createConfig, configureChains, WagmiConfig } from "wagmi";
@@ -32,4 +30,4 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   );
 };
 
-export default api.withTRPC(MyApp);
+export default MyApp;
