@@ -22,13 +22,15 @@ export const setup = (_p5, canvasParentRef) => {
   if (!isServer()) ml5 = require("ml5");
   p5 = _p5;
   model = ml5.sketchRNN(window.location.origin + "/face.gen.json");
-  cnv = p5.createCanvas(512, 512).parent(canvasParentRef);
+ 
+  if (p5.windowWidth < 1024) {
+    cnv = p5.createCanvas(350, 350).parent(canvasParentRef); 
+  } else {
+    cnv = p5.createCanvas(512, 512).parent(canvasParentRef);
+  }
   p5.background(255);
 
-  if (p5.windowWidth < 512) {
-    // p5.resizeCanvas(256, 256);
-    p5.scale(0.5, 0.5);
-  }
+
   // run sketchRNN
   startDrawing();
 };

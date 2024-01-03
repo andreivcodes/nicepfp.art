@@ -18,15 +18,15 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>nicepfp.art</title>
-        <meta name="description" content=" Simple. Free. Unlimited. Forever." />
+        <meta name="description" content="Simple. Free. Unlimited. Forever." />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50">
-        <div className="flex flex-row gap-4 p-10">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 w-full">
+        <div className="w-full items-center lg:items-start lg:w-fit flex flex-col gap-2 lg:gap-4 lg:p-10 lg:flex-row">
           <DrawSheet />
           <Welcome />
         </div>
-        <div className="grid w-fit grid-cols-3 items-center gap-4">
+        <div className="flex flex-col lg:grid w-fit grid-cols-3 items-center gap-4">
           <CardWhat />
           <CardWhy />
           <CardHowMuch />
@@ -45,17 +45,17 @@ export default Home;
 
 const Welcome = () => {
   return (
-    <div className="flex flex-col items-end">
-      <div className="flex flex-col items-end">
-        <p className="text-[96px] font-extrabold text-gray-800">Welcome to </p>
-        <p className="bg-purple-200 text-[96px] font-extralight text-purple-800">
+    <div className="flex flex-col items-center lg:items-end">
+      <div className="flex flex-col items-center lg:items-end">
+        <p className="text-[36px] lg:text-[96px] font-extrabold text-gray-800">Welcome to </p>
+        <p className="bg-purple-200 text-[36px] lg:text-[96px] font-extralight text-purple-800">
           nicepfp.art
         </p>
       </div>
-      <p className="mt-8 text-xl font-light text-gray-700">
+      <p className="w-4/5 lg:w-full mt-8 text-xl font-light text-gray-700">
         I needed a nice profile picture for my Twitter, so I made this.
       </p>
-      <p className="text-xl font-light text-gray-700">
+      <p className="w-4/5 lg:w-full text-xl font-light text-gray-700">
         Simple. Free. Unlimited. Forever.
       </p>
     </div>
@@ -213,7 +213,7 @@ const Showcase = () => {
         }}
         hasMore={true || false}
       >
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid lg:grid-cols-4 2xl:grid-cols-6 gap-4 items-center justify-center">
           {supply &&
             [...Array(supply)]
               .slice(0, maxItems)
@@ -245,18 +245,21 @@ const Mint = (props: { id: number }) => {
         )}`,
       )
         .then((response) => response.json())
+        
         .then((data) => {
           setImage(
             `https://cloudflare-ipfs.com/ipfs/${(data.image as string).slice(
               21,
             )}`,
           );
+        }).catch(()=>{
+          setImage("https://cloudflare-ipfs.com/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7");
         });
     }
   }, [getTokenUri]);
 
   return (
-    <div>
+    <div className="border shadow-md w-fit">
       <Image src={image} width={150} height={150} alt={""} />
     </div>
   );
