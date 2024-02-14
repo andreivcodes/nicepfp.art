@@ -28,7 +28,9 @@ export const getIpfs = async (imageBase64: string) => {
   });
 
 
-  const imageIPFS = await ipfsClient.add(imageBase64);
+  const imageBuffer = Buffer.from(imageBase64.replace(/^data:image\/\w+;base64,/, ""), "base64");
+
+  const imageIPFS = await ipfsClient.add(imageBuffer);
 
   const jsonObj = {
     name: `nicepfp`,

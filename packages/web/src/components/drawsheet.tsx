@@ -81,14 +81,14 @@ const MintButton = () => {
 
   const handleMintButtonClick = () => {
     setLoading(true);
-    const image = captureFrame();
 
     const run = async (img: string) => {
       let data = await getIpfs(img);
-      setIpfsData(data)
+      setIpfsData(data);
     }
 
-    run(image)
+    const image = captureFrame();
+    run(image);
   };
 
   if (!isConnected)

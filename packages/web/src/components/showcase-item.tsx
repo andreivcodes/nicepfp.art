@@ -4,6 +4,8 @@ import contractJson from "../abi/nicepfp.json";
 import Image from "next/image"
 import { Card, CardContent } from "./ui/card";
 
+
+const ignoreList = [302];
 export const ShowcaseItem = (props: { id: number }) => {
   const getTokenUri = useContractRead({
     address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
@@ -35,10 +37,13 @@ export const ShowcaseItem = (props: { id: number }) => {
     }
   }, [getTokenUri]);
 
+  if (ignoreList.includes(props.id))
+    return <></>;
+
   return (
     <Card>
       <CardContent className="flex flex-col justify-center items-center">
-        <Image src={image} width={150} height={150} alt={""} />
+        <Image src={image} width={150} height={150} alt={props.id} />
       </CardContent>
     </Card>
   );
