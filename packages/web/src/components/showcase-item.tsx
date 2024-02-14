@@ -43,7 +43,7 @@ export const ShowcaseItem = (props: { id: number }) => {
   return (
     <Card>
       <CardContent className="flex flex-col justify-center items-center">
-        <Image src={image} width={150} height={150} alt={props.id} />
+        <Image src={image} width={150} height={150} alt={props.id.toString()} />
       </CardContent>
     </Card>
   );
