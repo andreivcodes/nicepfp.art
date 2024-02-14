@@ -6,13 +6,12 @@
   ],
   "scripts": {
     "web": "yarn workspace web-ts build && yarn workspace web-ts start",
-    "web-dev": "yarn workspace web-ts dev",
+    "web-dev": "yarn workspace web dev",
     "hardhat": "yarn workspace hardhat dev",
     "start": "concurrently  \"yarn hardhat\" \"yarn web\"",
     "dev": "concurrently  \"yarn hardhat\" \"yarn web-dev\""
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "yarn-upgrade-all": "^0.7.2"
+    "concurrently": "^8.2.2"
   }
 }
