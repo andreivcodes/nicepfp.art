@@ -2,7 +2,6 @@
 
 import EthCrypto from "eth-crypto";
 import { create } from "ipfs-http-client";
-import sharp from "sharp";
 
 const authkey =
   "Basic " +

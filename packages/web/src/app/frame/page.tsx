@@ -1,4 +1,3 @@
-import { getTokenUrl } from "frames.js";
 import {
   FrameButton,
   FrameContainer,
@@ -8,47 +7,22 @@ import {
   getPreviousFrame,
   useFramesReducer,
 } from "frames.js/next/server";
-import Link from "next/link";
-import { polygon, zora } from "viem/chains";
+import { generateImageBase64 } from "./actions";
 
 type State = {
   pageIndex: number;
 };
 
-const nfts: {
-  src: string;
-  tokenUrl: string;
-}[] = [
-    {
-      src: "https://ipfs.decentralized-content.com/ipfs/bafybeifs7vasy5zbmnpixt7tb6efi35kcrmpoz53d3vg5pwjz52q7fl6pq/cook.png",
-      tokenUrl: getTokenUrl({
-        address: "0x99de131ff1223c4f47316c0bb50e42f356dafdaa",
-        chain: zora,
-        tokenId: "2",
-      }),
-    },
-    {
-      src: "https://remote-image.decentralized-content.com/image?url=https%3A%2F%2Fipfs.decentralized-content.com%2Fipfs%2Fbafybeidc6e5t3qmyckqh4fr2ewrov5asmeuv4djycopvo3ro366nd3bfpu&w=1920&q=75",
-      tokenUrl: getTokenUrl({
-        address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
-        chain: polygon,
-        tokenId: "3",
-      }),
-    },
-  ];
 const initialState: State = { pageIndex: 0 };
 
 const reducer: FrameReducer<State> = (state, action) => {
-  const buttonIndex = action.postBody?.untrustedData.buttonIndex;
 
   return {
-    pageIndex: buttonIndex
-      ? (state.pageIndex + (buttonIndex === 2 ? 1 : -1)) % nfts.length
-      : state.pageIndex,
+    pageIndex: 0
   };
 };
 
-// This is a react server component only
+
 export default async function Home({
   params,
   searchParams,
@@ -56,28 +30,25 @@ export default async function Home({
   const previousFrame = getPreviousFrame<State>(searchParams);
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  let ml5 = require("ml5");
-  const model = ml5.sketchRNN('cat');
+  const imageSrc = await generateImageBase64();
 
-  // then, when done, return next frame
   return (
     <div>
-      Mint button example <Link href="/debug">Debug</Link>
       <FrameContainer
-        pathname="/examples/mint-button"
-        postUrl="/examples/mint-button/frames"
+        pathname="/frame"
+        postUrl="/frame"
         state={state}
         previousFrame={previousFrame}
       >
         <FrameImage
-          src={nfts[state.pageIndex]!.src}
+          src={`https://ipfs.io/ipfs/${imageSrc}`}
           aspectRatio="1:1"
         ></FrameImage>
-        <FrameButton>←</FrameButton>
-        <FrameButton>→</FrameButton>
-        <FrameButton action="mint" target={nfts[state.pageIndex]!.tokenUrl}>
+        <FrameButton>Redraw</FrameButton>
+
+        {/* <FrameButton action="mint" target="">
           Mint
-        </FrameButton>
+        </FrameButton> */}
       </FrameContainer>
     </div>
   );
