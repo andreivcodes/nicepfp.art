@@ -11,17 +11,19 @@ import { generateImageBase64 } from "./actions";
 
 type State = {
   imgSrc: string;
+  signature: string
 };
 
 export default async function Home({
   searchParams,
 }: NextServerPageProps) {
-  const newImg = await generateImageBase64();
-  const initialState: State = { imgSrc: "https://ipfs.io/ipfs/" + newImg };
+  const { image, signature } = await generateImageBase64();
+  const initialState: State = { imgSrc: "https://ipfs.io/ipfs/QmQjQALYpfRmpQXTyvC3QW3bGYujkZxjSsH9rQ1zqERvnY", signature: "" };
 
   const reducer: FrameReducer<State> = (state, action) => {
     return {
-      imgSrc: "https://ipfs.io/ipfs/" + newImg
+      imgSrc: "https://ipfs.io/ipfs/" + image,
+      signature
     };
   };
 
