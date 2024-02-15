@@ -19,6 +19,8 @@ const ipfsClient = create({
 });
 
 export const generateImageBase64 = async () => {
+  console.log("Generating image");
+
   const browser = await puppeteer.connect({ browserURL: 'https://browserless.nicepfp.art' })
 
   const page = await browser.newPage();
@@ -41,6 +43,7 @@ export const generateImageBase64 = async () => {
 
   const imageIPFS = await ipfsClient.add(imageBuffer);
 
+  console.log("Image generated");
   return imageIPFS.path;
 }
 
