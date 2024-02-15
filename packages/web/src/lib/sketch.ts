@@ -21,7 +21,7 @@ export const captureFrame = () => {
 export const setup = (_p5, canvasParentRef) => {
   if (!isServer()) ml5 = require("ml5");
   p5 = _p5;
-  model = ml5.sketchRNN(window.location.origin + "/face.gen.json");
+  model = ml5.sketchRNN("https://storage.googleapis.com/quickdraw-models/sketchRNN/large_models/face.gen.json");
 
   if (p5.windowWidth < 1024) {
     cnv = p5.createCanvas(p5.windowWidth * 90 / 100, p5.windowWidth * 90 / 100).parent(canvasParentRef);
