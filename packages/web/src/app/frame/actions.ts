@@ -1,3 +1,5 @@
+"use server"
+
 import puppeteer from "puppeteer";
 import { create } from "ipfs-http-client";
 
@@ -7,19 +9,20 @@ const authkey =
     process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET
   ).toString("base64");
 
+const ipfsClient = create({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+  headers: {
+    authorization: authkey,
+  },
+});
+
 export const generateImageBase64 = async () => {
   const browser = await puppeteer.connect({ browserURL: 'https://browserless.nicepfp.art' })
-  const ipfsClient = create({
-    host: "ipfs.infura.io",
-    port: 5001,
-    protocol: "https",
-    headers: {
-      authorization: authkey,
-    },
-  });
 
   const page = await browser.newPage();
-  await page.goto("https://nicepfp.art/frames/img", { waitUntil: ["networkidle0"] });
+  await page.goto("https://nicepfp.art/frame/img", { waitUntil: ["networkidle0"] });
 
   await sleep(1000)
 

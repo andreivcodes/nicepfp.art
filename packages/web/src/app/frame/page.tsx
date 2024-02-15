@@ -10,27 +10,29 @@ import {
 import { generateImageBase64 } from "./actions";
 
 type State = {
-  pageIndex: number;
+  imgSrc: string;
 };
 
-const initialState: State = { pageIndex: 0 };
 
-const reducer: FrameReducer<State> = (state, action) => {
-
-  return {
-    pageIndex: 0
-  };
-};
 
 
 export default async function Home({
   params,
   searchParams,
 }: NextServerPageProps) {
-  const previousFrame = getPreviousFrame<State>(searchParams);
-  const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  const imageSrc = await generateImageBase64();
+  const initialState: State = { imgSrc: `https://ipfs.io/ipfs/${await generateImageBase64()}` };
+
+  const newImg = await generateImageBase64();
+
+  const reducer: FrameReducer<State> = (state, action) => {
+    return {
+      imgSrc: `https://ipfs.io/ipfs/${newImg}`
+    };
+  };
+
+  const previousFrame = getPreviousFrame<State>(searchParams);
+  const [state, dispatch] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
   return (
     <div>
@@ -41,10 +43,12 @@ export default async function Home({
         previousFrame={previousFrame}
       >
         <FrameImage
-          src={`https://ipfs.io/ipfs/${imageSrc}`}
+          src={state.imgSrc}
           aspectRatio="1:1"
         ></FrameImage>
-        <FrameButton>Redraw</FrameButton>
+        <FrameButton>
+          Redraw
+        </FrameButton>
 
         {/* <FrameButton action="mint" target="">
           Mint
