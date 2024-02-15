@@ -3,7 +3,7 @@ import puppeteer from "puppeteer";
 
 
 export async function GET(req: NextRequest) {
-  const browser = await puppeteer.connect({ browserWSEndpoint: 'ws://192.168.7.10:4646/' })
+  const browser = await puppeteer.connect({ browserWSEndpoint: 'ws://browserless.nicepfp.art/' })
 
   const page = await browser.newPage();
   await page.goto("https://nicepfp.art/frames/img", { waitUntil: ["networkidle0"] });
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     return data;
   });
 
-  console.log(data)
+  console.log({ data })
 
   return NextResponse.json({ data });
 }
