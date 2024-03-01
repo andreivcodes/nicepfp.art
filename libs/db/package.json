@@ -1,0 +1,11 @@
+{
+  "name": "@nicepfp/db",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "kysely-data-api": "^0.2.1"
+  }
+}

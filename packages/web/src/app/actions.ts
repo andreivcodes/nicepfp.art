@@ -3,29 +3,25 @@
 import EthCrypto from "eth-crypto";
 import { create } from "ipfs-http-client";
 
-const authkey =
-  "Basic " +
-  Buffer.from(
-    process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET
-  ).toString("base64");
-
 const hexPrivateKey = process.env.PRIVATE_KEY ?? "";
+
+const ipfsClient = create({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+  headers: {
+    authorization: "Basic " +
+      Buffer.from(
+        process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET
+      ).toString("base64"),
+  },
+});
 
 export const getIpfs = async (imageBase64: string) => {
   let response = {
     path: "",
     signature: ""
   }
-
-  const ipfsClient = create({
-    host: "ipfs.infura.io",
-    port: 5001,
-    protocol: "https",
-    headers: {
-      authorization: authkey,
-    },
-  });
-
 
   const imageBuffer = Buffer.from(imageBase64.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
@@ -37,7 +33,9 @@ export const getIpfs = async (imageBase64: string) => {
     image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
   };
 
-  response.path = (await ipfsClient.add(JSON.stringify(jsonObj))).path;
+  const ipfsObj = await ipfsClient.add(JSON.stringify(jsonObj));
+
+  response.path = ipfsObj.path;
 
   try {
     const message = EthCrypto.hash.keccak256([

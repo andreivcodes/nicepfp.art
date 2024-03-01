@@ -4,49 +4,130 @@ import {
   FrameImage,
   FrameReducer,
   NextServerPageProps,
+  getFrameMessage,
   getPreviousFrame,
   useFramesReducer,
 } from "frames.js/next/server";
-import { generateImageBase64 } from "./actions";
+import { getAddressForFid } from "frames.js"
+import { getImage, hasMinted, mint, unlock } from "./actions";
+
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-cache'
 
 type State = {
-  imgSrc: string;
-  signature: string
+  i: boolean;
+  m: boolean;
+  src: string;
+  id: string;
 };
+
+const initialState: State = { i: true, m: false, src: "", id: "" };
 
 export default async function Home({
   searchParams,
 }: NextServerPageProps) {
-  const { image, signature } = await generateImageBase64();
-  const initialState: State = { imgSrc: "https://ipfs.io/ipfs/QmQjQALYpfRmpQXTyvC3QW3bGYujkZxjSsH9rQ1zqERvnY", signature: "" };
+  const previousFrame = getPreviousFrame<State>(searchParams);
+
+  const frameMessage = await getFrameMessage(previousFrame.postBody);
+
+  const address = await getAddressForFid({
+    fid: frameMessage?.requesterFid ?? 1,
+    options: { fallbackToCustodyAddress: true }
+  });
+
+  let alreadyMinted = await hasMinted(address)
+
+  if (frameMessage?.buttonIndex == 1 && previousFrame.prevState?.i == false) {
+    await mint(address, previousFrame?.prevState?.id ?? "")
+    alreadyMinted = true;
+  }
+
+  const { id, imgSrc } = await getImage();
 
   const reducer: FrameReducer<State> = (state, action) => {
     return {
-      imgSrc: "https://ipfs.io/ipfs/" + image,
-      signature
+      i: false,
+      m: alreadyMinted,
+      src: imgSrc,
+      id: id
     };
   };
 
-  const previousFrame = getPreviousFrame<State>(searchParams);
+
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  return (
-    <div>
-      <FrameContainer
-        pathname="/frame"
-        postUrl="/frame/post"
-        state={state}
-        previousFrame={previousFrame}
-      >
-        <FrameImage
-          src={state.imgSrc}
-          aspectRatio="1:1"
-        ></FrameImage>
-        <FrameButton>
-          Redraw
-        </FrameButton>
+  if (previousFrame.prevState)
+    await unlock(previousFrame.prevState.id);
 
-      </FrameContainer>
-    </div>
-  );
+  if (state.m) {
+    return (
+      <div>
+        <FrameContainer
+          pathname="/frame"
+          postUrl="/frame/post"
+          state={state}
+          previousFrame={previousFrame}
+        >
+          <FrameImage>
+            <div tw="w-full h-full bg-white text-black justify-center items-center flex">
+              You minted your nicepfp!
+            </div>
+          </FrameImage>
+          <FrameButton>
+            Thanks!
+          </FrameButton>
+        </FrameContainer>
+      </div >
+    );
+  }
+  else {
+    return (
+      <div>
+        <FrameContainer
+          pathname="/frame"
+          postUrl="/frame/post"
+          state={state}
+          previousFrame={previousFrame}
+        >
+          {state.i ?
+            <FrameImage
+              aspectRatio="1:1"
+              src="https://nicepfp.art/assets/welcome.png">
+            </FrameImage>
+            :
+            <FrameImage
+              src={state.src}
+              aspectRatio="1:1"
+            />
+          }
+
+
+          {state.i ?
+            <FrameButton>
+              Generate nicepfp
+            </FrameButton>
+            :
+            null
+          }
+
+          {state.i ?
+            null
+            :
+            <FrameButton>
+              Mint
+            </FrameButton>
+          }
+
+          {state.i ?
+            null
+            :
+            <FrameButton>
+              Redraw
+            </FrameButton>
+          }
+
+        </FrameContainer>
+      </div >
+    );
+  }
 }

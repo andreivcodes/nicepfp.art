@@ -1,60 +1,57 @@
 "use server"
 
-import puppeteer from "puppeteer";
-import { create } from "ipfs-http-client";
-import EthCrypto from "eth-crypto";
+import { db, sql } from "@nicepfp/db"
+import AWS from "aws-sdk";
+import { Queue } from "sst/node/queue";
 
-const hexPrivateKey = process.env.PRIVATE_KEY ?? "";
-const authkey =
-  "Basic " +
-  Buffer.from(
-    process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET
-  ).toString("base64");
+const sqs = new AWS.SQS();
 
-const ipfsClient = create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    authorization: authkey,
-  },
-});
+export const mint = async (address: string, id: string) => {
+  await sqs.sendMessage({
+    QueueUrl: Queue.Mint.queueUrl,
+    MessageBody: JSON.stringify({
+      address: address,
+      entryId: id
+    }),
+  }).promise();
 
-export const generateImageBase64 = async () => {
-  console.log(`Generating image - ${new Date().toISOString()}`);
-
-
-  const browser = await puppeteer.connect({ browserURL: 'https://browserless.nicepfp.art' })
-
-  console.log(`Puppeteer connect - ${new Date().toISOString()}`);
-  const page = await browser.newPage();
-  await page.goto("https://nicepfp.art/frame/img", { waitUntil: ["networkidle0"] });
-
-  console.log(`Puppeteer go - ${new Date().toISOString()}`);
-  await sleep(1000)
-
-  const data = await page.evaluate(() => {
-    let data: string | undefined = "";
-    const canvas = document.querySelector<HTMLCanvasElement>('#defaultCanvas0');
-    if (canvas !== null)
-      data = canvas.toDataURL();
-
-    return data;
-  });
-
-  const imageBuffer = Buffer.from(data.replace(/^data:image\/\w+;base64,/, ""), "base64");
-
-  await browser.close();
-
-  console.log(`Puppeteer close - ${new Date().toISOString()}`);
-
-  const imageIPFS = await ipfsClient.add(imageBuffer);
-  let signature = "";
-
-  console.log(`IPFS uploaded - ${new Date().toISOString()}`);
-
-  console.log("Image generated");
-  return { image: imageIPFS.path, signature };
+  await db.insertInto('minters').values({ address: address }).execute();
 }
 
-const sleep = (ms: number): Promise<void> => new Promise(res => setTimeout(res, ms));
+export const hasMinted = async (address: string) => {
+  const minter = await db.selectFrom('minters').where("address", "=", address).executeTakeFirst();
+
+  return minter ? true : false
+}
+
+export const getImage = async () => {
+
+  const entries = await db.selectFrom("entry").selectAll().where("locked", "=", false).execute();
+
+  console.log(`Got ${entries.length} photos prepared.`)
+
+  if (entries.length < 10) {
+    for (let i = 0; i < 10; i++) {
+      await sqs.sendMessage({
+        QueueUrl: Queue.GenerateImage.queueUrl,
+        MessageBody: "make me a photo",
+      }).promise();
+    }
+    console.log(`Requested generation of 10 photos.`);
+  }
+
+  const randomEntry = await db.selectFrom("entry").selectAll().where("locked", "=", false).orderBy(sql`random()`).executeTakeFirst();
+
+  if (!randomEntry)
+    return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" }
+
+  console.log(`Locked ${randomEntry.id}`);
+  await db.updateTable("entry").where("id", "=", randomEntry.id).set({ locked: true }).execute();
+
+  return { id: randomEntry.id!, imgSrc: randomEntry.ipfsImage };
+}
+
+export const unlock = async (id: string) => {
+  await db.updateTable("entry").where("id", "=", id).set({ locked: false }).execute();
+  console.log(`Unlocked ${id}`);
+}

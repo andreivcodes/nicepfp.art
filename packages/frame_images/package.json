@@ -1,0 +1,21 @@
+{
+  "name": "@nicepfp/functions",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "dependencies": {
+    "@nicepfp/db": "*",
+    "aws-lambda": "^1.0.7",
+    "dotenv": "^16.4.5",
+    "eth-crypto": "^2.6.0",
+    "ipfs-http-client": "^60.0.1",
+    "puppeteer": "^22.3.0",
+    "viem": "^2.7.16"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.134"
+  }
+}

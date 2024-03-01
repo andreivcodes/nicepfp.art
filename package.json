@@ -2,16 +2,20 @@
   "private": true,
   "name": "nicepfp",
   "workspaces": [
-    "packages/*"
+    "libs/db",
+    "packages/web",
+    "packages/frame_images"
   ],
   "scripts": {
-    "web": "yarn workspace web-ts build && yarn workspace web-ts start",
-    "web-dev": "yarn workspace web dev",
-    "hardhat": "yarn workspace hardhat dev",
-    "start": "concurrently  \"yarn hardhat\" \"yarn web\"",
-    "dev": "concurrently  \"yarn hardhat\" \"yarn web-dev\""
+    "dev": "sst dev --profile=nicepfp",
+    "build": "sst build --profile=nicepfp",
+    "deploy": "sst deploy --profile=nicepfp",
+    "remove": "sst remove --profile=nicepfp",
+    "console": "sst console --profile=nicepfp",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "constructs": "10.3.0",
+    "sst": "2.40.5"
   }
 }
