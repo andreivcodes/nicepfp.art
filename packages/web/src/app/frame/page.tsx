@@ -11,9 +11,6 @@ import {
 import { getAddressForFid } from "frames.js"
 import { getImage, hasMinted, mint, unlock } from "./actions";
 
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-cache'
-
 type State = {
   i: boolean;
   m: boolean;
@@ -38,7 +35,8 @@ export default async function Home({
   let alreadyMinted = await hasMinted(address)
 
   if (frameMessage?.buttonIndex == 1 && previousFrame.prevState?.i == false) {
-    await mint(address, previousFrame?.prevState?.id ?? "")
+    if (previousFrame.prevState.id.length > 5)
+      await mint(address, previousFrame.prevState.id)
     alreadyMinted = true;
   }
 

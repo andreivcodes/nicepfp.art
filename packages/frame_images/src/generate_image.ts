@@ -4,6 +4,9 @@ import EthCrypto from "eth-crypto";
 import puppeteer from "puppeteer";
 import { create } from "ipfs-http-client";
 import { config } from "dotenv";
+import { Bucket } from "sst/node/bucket";
+import { Upload } from "@aws-sdk/lib-storage"
+import { S3Client } from "@aws-sdk/client-s3";
 
 config();
 
@@ -35,7 +38,7 @@ export const handler = async (event: SQSEvent) => {
 
   console.log(`Puppeteer go - ${new Date().toISOString()}`);
 
-  await page.waitForSelector("#defaultCanvas0")
+  await page.waitForSelector("#defaultCanvas0", { timeout: 60000 })
 
   await sleep(5000);
 
@@ -86,15 +89,38 @@ export const handler = async (event: SQSEvent) => {
     console.log(e)
   }
 
-  await db.insertInto("entry").values(
+
+  const s3Image = await new Upload({
+    client: new S3Client({}),
+    params: {
+      ACL: 'public-read',
+      Bucket: Bucket.Images.bucketName,
+      Key: `${imageIPFS.path}`,
+      Body: imageBuffer,
+    },
+    partSize: 1024 * 1024 * 5,
+    leavePartsOnError: false,
+  }).done()
+
+  await db.insertInto("entries").values(
     {
       ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
-      ipfsNFT: `https://ipfs.io/ipfs/${objIPFS.path}`,
+      ipfsNFT: objIPFS.path,
+      s3Image: s3Image.Location ?? "",
       signature: signature,
       locked: false
-    }).execute()
+    }
+  ).execute()
 
-  console.log(`Inserted into db ipfsNFT: https://ipfs.io/ipfs/${objIPFS.path} - ${new Date().toISOString()}`);
+  console.log(`
+    ipfsImage: https://ipfs.io/ipfs/${imageIPFS.path},
+    ipfsNFT: ${objIPFS.path},
+    s3Image: ${s3Image.Location ?? ""},
+    signature: ${signature},
+    locked: ${false}
+    `);
+
+  console.log(`Inserted into db ipfsNFT: ${objIPFS.path}(https://ipfs.io/ipfs/${objIPFS.path}) - ${new Date().toISOString()}`);
 
   return {
     statusCode: 200,

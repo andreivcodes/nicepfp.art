@@ -1,10 +1,10 @@
 import { sql } from 'kysely';
 
 export async function up(db) {
-
   await db.schema
-    .createTable("entry")
+    .createTable("entries")
     .addColumn("id", "text", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
+    .addColumn("s3Image", "text", (col) => col.notNull())
     .addColumn("ipfsImage", "text", (col) => col.notNull())
     .addColumn("ipfsNFT", "text", (col) => col.notNull())
     .addColumn("signature", "text", (col) => col.notNull())
@@ -19,6 +19,6 @@ export async function up(db) {
 }
 
 export async function down(db) {
-  await db.schema.dropTable("entry").execute();
+  await db.schema.dropTable("entries").execute();
   await db.schema.dropTable("minters").execute();
 }

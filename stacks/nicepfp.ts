@@ -1,4 +1,4 @@
-import { NextjsSite, Queue, RDS, Service, StackContext } from "sst/constructs";
+import { Bucket, NextjsSite, Queue, RDS, Service, StackContext } from "sst/constructs";
 import { config as dotenv_config } from "dotenv";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Duration } from "aws-cdk-lib/core";
@@ -22,6 +22,8 @@ export function stack({ stack }: StackContext) {
     defaultDatabaseName: "gitshow_db",
     migrations: "libs/db/migrations",
   });
+
+  const images_bucket = new Bucket(stack, "Images");
 
   const mint = new Queue(stack, "Mint", {
     cdk: {
@@ -69,7 +71,7 @@ export function stack({ stack }: StackContext) {
           install: ["ipfs-utils", "eth-crypto"]
         },
         timeout: "5 minutes",
-        bind: [db]
+        bind: [db, images_bucket]
       },
       cdk: {
         eventSource: {

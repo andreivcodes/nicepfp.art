@@ -6,7 +6,10 @@ import { Queue } from "sst/node/queue";
 
 const sqs = new AWS.SQS();
 
+
 export const mint = async (address: string, id: string) => {
+  console.log(`Add ${id} to mint queue for ${address}`);
+
   await sqs.sendMessage({
     QueueUrl: Queue.Mint.queueUrl,
     MessageBody: JSON.stringify({
@@ -19,18 +22,19 @@ export const mint = async (address: string, id: string) => {
 }
 
 export const hasMinted = async (address: string) => {
-  const minter = await db.selectFrom('minters').where("address", "=", address).executeTakeFirst();
+
+  const minter = await db.selectFrom('minters').selectAll().where("address", "=", address).executeTakeFirst();
 
   return minter ? true : false
 }
 
 export const getImage = async () => {
 
-  const entries = await db.selectFrom("entry").selectAll().where("locked", "=", false).execute();
+  const entries = await db.selectFrom("entries").selectAll().where("locked", "=", false).execute();
 
   console.log(`Got ${entries.length} photos prepared.`)
 
-  if (entries.length < 10) {
+  if (entries.length < 100) {
     for (let i = 0; i < 10; i++) {
       await sqs.sendMessage({
         QueueUrl: Queue.GenerateImage.queueUrl,
@@ -40,18 +44,18 @@ export const getImage = async () => {
     console.log(`Requested generation of 10 photos.`);
   }
 
-  const randomEntry = await db.selectFrom("entry").selectAll().where("locked", "=", false).orderBy(sql`random()`).executeTakeFirst();
+  const randomEntry = await db.selectFrom("entries").selectAll().where("locked", "=", false).orderBy(sql`random()`).executeTakeFirst();
 
   if (!randomEntry)
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" }
 
+  await db.updateTable("entries").where("id", "=", randomEntry.id).set({ locked: true }).execute();
   console.log(`Locked ${randomEntry.id}`);
-  await db.updateTable("entry").where("id", "=", randomEntry.id).set({ locked: true }).execute();
 
   return { id: randomEntry.id!, imgSrc: randomEntry.ipfsImage };
 }
 
 export const unlock = async (id: string) => {
-  await db.updateTable("entry").where("id", "=", id).set({ locked: false }).execute();
+  await db.updateTable("entries").where("id", "=", id).set({ locked: false }).execute();
   console.log(`Unlocked ${id}`);
 }

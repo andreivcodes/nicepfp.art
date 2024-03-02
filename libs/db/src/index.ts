@@ -2,7 +2,7 @@ import { RDSData } from "@aws-sdk/client-rds-data";
 import { Kysely } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 import { RDS } from "sst/node/rds";
-import { DB } from "./schema";
+import { Database } from "./schema";
 import { sql } from "kysely"
 
 const dataApi = new DataApiDialect({
@@ -15,5 +15,5 @@ const dataApi = new DataApiDialect({
   },
 });
 
-export const db = new Kysely<DB>({ dialect: dataApi });
+export const db = new Kysely<Database>({ dialect: dataApi });
 export { sql }

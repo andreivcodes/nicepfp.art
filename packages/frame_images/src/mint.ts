@@ -13,6 +13,8 @@ export const handler = async (event: SQSEvent) => {
   for (const record of event.Records) {
     const { address, entryId } = JSON.parse(record.body);
 
+    console.log(`Mint: ${entryId} to ${address}`)
+
     const account = privateKeyToAccount(process.env.PRIVATE_KEY! as `0x${string}`)
 
     const walletClient = createWalletClient({
@@ -21,7 +23,7 @@ export const handler = async (event: SQSEvent) => {
       transport: http(),
     })
 
-    const entry = await db.selectFrom("entry").selectAll().where("id", "=", entryId).where('locked', "=", true).executeTakeFirstOrThrow();
+    const entry = await db.selectFrom("entries").selectAll().where("id", "=", entryId).executeTakeFirstOrThrow();
 
     await walletClient.writeContract({
       address: '0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34',
@@ -30,7 +32,7 @@ export const handler = async (event: SQSEvent) => {
       args: [address, entry.ipfsNFT, entry.signature],
     })
 
-    await db.deleteFrom('entry').where("id", "=", entryId).execute();
+    await db.deleteFrom('entries').where("id", "=", entryId).execute();
   }
 
   return {
