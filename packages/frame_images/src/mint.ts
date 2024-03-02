@@ -13,6 +13,15 @@ export const handler = async (event: SQSEvent) => {
   for (const record of event.Records) {
     const { address, entryId } = JSON.parse(record.body);
 
+
+    const minter = await db.selectFrom('minters').selectAll().where("address", "=", address).executeTakeFirst();
+    if (minter) {
+      console.log(`Duble mint for ${address}`)
+      return {
+        statusCode: 500,
+      };
+    }
+
     console.log(`Mint: ${entryId} to ${address}`)
 
     const account = privateKeyToAccount(process.env.PRIVATE_KEY! as `0x${string}`)

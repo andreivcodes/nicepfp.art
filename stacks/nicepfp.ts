@@ -23,8 +23,6 @@ export function stack({ stack }: StackContext) {
     migrations: "libs/db/migrations",
   });
 
-  const images_bucket = new Bucket(stack, "Images");
-
   const mint = new Queue(stack, "Mint", {
     cdk: {
       queue: {
@@ -71,7 +69,7 @@ export function stack({ stack }: StackContext) {
           install: ["ipfs-utils", "eth-crypto"]
         },
         timeout: "5 minutes",
-        bind: [db, images_bucket]
+        bind: [db]
       },
       cdk: {
         eventSource: {

@@ -120,21 +120,3 @@ const MintButton = () => {
     </button>
   );
 };
-
-function dataURLtoFile(dataurl: string, filename: string) {
-  const arr = dataurl.split(",");
-  let u8arr = new Uint8Array(0);
-
-  if (!arr) return;
-  if (!arr[0]) return;
-
-  const mime = arr[0].match(/:(.*?);/)?.[1];
-  const bstr = atob(arr[1] as string);
-  let n = bstr.length;
-  u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-
-  return new File([u8arr], filename, { type: mime });
-}
