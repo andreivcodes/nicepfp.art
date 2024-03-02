@@ -83,7 +83,7 @@ export function stack({ stack }: StackContext) {
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
     memorySize: "2 GB",
-    warm: 10,
+    warm: 20,
     imageOptimization: {
       memorySize: "2 GB",
     },
