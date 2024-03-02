@@ -63,7 +63,9 @@ export function stack({ stack }: StackContext) {
             process.env.IPFS_PROJECT_SECRET ?? "",
           IPFS_PROJECT_ID:
             process.env.IPFS_PROJECT_ID ?? "",
-          PRIVATE_KEY: process.env.PRIVATE_KEY ?? ""
+          PRIVATE_KEY: process.env.PRIVATE_KEY ?? "",
+          BROWSERLESS_TOKEN: process.env.BROWSERLESS_TOKEN ?? ""
+
         },
         nodejs: {
           install: ["ipfs-utils", "eth-crypto"]
