@@ -99,7 +99,7 @@ export const handler = async (event: SQSEvent) => {
   console.log(`
     ipfsImage: https://ipfs.io/ipfs/${imageIPFS.path},
     ipfsNFT: ${objIPFS.path},
-    s3Image: ${s3Image.Location ?? ""},
+    s3Image: ${""},
     signature: ${signature},
     locked: ${false}
     `);
