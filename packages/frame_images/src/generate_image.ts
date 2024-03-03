@@ -26,7 +26,7 @@ export const handler = async (event: SQSEvent) => {
   console.log(`Generating image - ${new Date().toISOString()}`);
 
   const browser = await puppeteer.connect({
-    browserURL: `https://browserless.andreiv.com?token=${process.env.BROWSERLESS_TOKEN}`
+    browserWSEndpoint: `wss://browserless.andreiv.com?token=${process.env.BROWSERLESS_TOKEN}`
   })
 
   console.log(`Puppeteer connect - ${new Date().toISOString()}`);

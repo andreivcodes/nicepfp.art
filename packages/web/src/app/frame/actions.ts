@@ -49,13 +49,15 @@ export const getImage = async () => {
   if (!randomEntry)
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" }
 
-  await db.updateTable("entries").where("id", "=", randomEntry.id).set({ locked: true }).execute();
-  console.log(`Locked ${randomEntry.id}`);
-
   return { id: randomEntry.id!, imgSrc: randomEntry.ipfsImage };
 }
 
 export const unlock = async (id: string) => {
   await db.updateTable("entries").where("id", "=", id).set({ locked: false }).execute();
   console.log(`Unlocked ${id}`);
+}
+
+export const lock = async (id: string) => {
+  await db.updateTable("entries").where("id", "=", id).set({ locked: true }).execute();
+  console.log(`Locked ${id}`);
 }

@@ -9,23 +9,59 @@ import {
   useFramesReducer,
 } from "frames.js/next/server";
 import { getAddressForFid } from "frames.js"
-import { getImage, hasMinted, mint, unlock } from "./actions";
+import { getImage, hasMinted, lock, mint, unlock } from "./actions";
 
 type State = {
-  i: boolean;
-  m: boolean;
-  src: string;
-  id: string;
+  src: string
+  id: string
 };
 
-const initialState: State = { i: true, m: false, src: "", id: "" };
+const initialState: State = {
+  id: "",
+  src: ""
+};
 
 export default async function Home({
   searchParams,
 }: NextServerPageProps) {
   const previousFrame = getPreviousFrame<State>(searchParams);
-
   const frameMessage = await getFrameMessage(previousFrame.postBody);
+
+  const { id, imgSrc } = await getImage();
+  const reducer: FrameReducer<State> = (state, action) => {
+    if (frameMessage?.buttonIndex == 1 && previousFrame.prevState) {
+      return {
+        src: previousFrame.prevState.src,
+        id: previousFrame.prevState.id
+      };
+    }
+    else {
+      return {
+        src: imgSrc,
+        id: id
+      };
+    }
+  };
+  const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
+
+  if (!previousFrame.prevState) {
+    return (
+      <div>
+        <FrameContainer
+          pathname="/frame"
+          postUrl="/frame/post"
+          state={state}
+          previousFrame={previousFrame}
+        >
+          <FrameImage src="https://nicepfp.art/assets/welcome.png" aspectRatio="1:1">
+          </FrameImage>
+          <FrameButton>
+            Generate nicepfp
+          </FrameButton>
+        </FrameContainer>
+      </div >
+    );
+  }
 
   const address = await getAddressForFid({
     fid: frameMessage?.requesterFid ?? 1,
@@ -34,30 +70,14 @@ export default async function Home({
 
   let alreadyMinted = await hasMinted(address)
 
-  if (frameMessage?.buttonIndex == 1 && previousFrame.prevState?.i == false) {
-    if (previousFrame.prevState.id.length > 5)
+  if (frameMessage?.buttonIndex == 1) {
+    if (previousFrame.prevState.id.length > 0 && frameMessage.recastedCast) {
       await mint(address, previousFrame.prevState.id)
-    alreadyMinted = true;
+      alreadyMinted = true;
+    }
   }
 
-  const { id, imgSrc } = await getImage();
-
-  const reducer: FrameReducer<State> = (state, action) => {
-    return {
-      i: false,
-      m: alreadyMinted,
-      src: imgSrc,
-      id: id
-    };
-  };
-
-
-  const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
-
-  if (previousFrame.prevState)
-    await unlock(previousFrame.prevState.id);
-
-  if (state.m) {
+  if (alreadyMinted) {
     return (
       <div>
         <FrameContainer
@@ -68,7 +88,7 @@ export default async function Home({
         >
           <FrameImage>
             <div tw="w-full h-full bg-white text-black justify-center items-center flex">
-              You minted your nicepfp!
+              You already minted your nicepfp! ❤️
             </div>
           </FrameImage>
           <FrameButton>
@@ -78,54 +98,30 @@ export default async function Home({
       </div >
     );
   }
-  else {
-    return (
-      <div>
-        <FrameContainer
-          pathname="/frame"
-          postUrl="/frame/post"
-          state={state}
-          previousFrame={previousFrame}
-        >
-          {state.i ?
-            <FrameImage
-              aspectRatio="1:1"
-              src="https://nicepfp.art/assets/welcome.png">
-            </FrameImage>
-            :
-            <FrameImage
-              src={state.src}
-              aspectRatio="1:1"
-            />
-          }
 
+  if (previousFrame.prevState.id)
+    await unlock(previousFrame.prevState.id);
 
-          {state.i ?
-            <FrameButton>
-              Generate nicepfp
-            </FrameButton>
-            :
-            null
-          }
+  await lock(state.id)
 
-          {state.i ?
-            null
-            :
-            <FrameButton>
-              Mint
-            </FrameButton>
-          }
+  return (
+    <div>
+      <FrameContainer
+        pathname="/frame"
+        postUrl="/frame/post"
+        state={state}
+        previousFrame={previousFrame}
+      >
+        <FrameImage src={state.src} aspectRatio="1:1">
+        </FrameImage>
+        <FrameButton>
+          {frameMessage?.recastedCast ? "Mint" : "Recast to mint"}
+        </FrameButton>
+        <FrameButton>
+          Redraw
+        </FrameButton>
+      </FrameContainer>
+    </div >
+  );
 
-          {state.i ?
-            null
-            :
-            <FrameButton>
-              Redraw
-            </FrameButton>
-          }
-
-        </FrameContainer>
-      </div >
-    );
-  }
 }
