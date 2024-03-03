@@ -17,8 +17,6 @@ export const mint = async (address: string, id: string) => {
       entryId: id
     }),
   }).promise();
-
-  await db.insertInto('minters').values({ address: address }).execute();
 }
 
 export const hasMinted = async (address: string) => {
