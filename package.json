@@ -5,17 +5,5 @@
     "libs/db",
     "packages/web",
     "packages/frame_images"
-  ],
-  "scripts": {
-    "dev": "sst dev --profile=nicepfp",
-    "build": "sst build --profile=nicepfp",
-    "deploy": "sst deploy --profile=nicepfp",
-    "remove": "sst remove --profile=nicepfp",
-    "console": "sst console --profile=nicepfp",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "constructs": "10.3.0",
-    "sst": "2.40.5"
-  }
+  ]
 }

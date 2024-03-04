@@ -1,22 +1,21 @@
 "use server"
 
 import { db, sql } from "@nicepfp/db"
-import AWS from "aws-sdk";
-import { Queue } from "sst/node/queue";
+import Redis from "ioredis"
 
-const sqs = new AWS.SQS();
-
+const redis = new Redis(process.env.REDIS_URL!)
 
 export const mint = async (address: string, id: string) => {
   console.log(`Add ${id} to mint queue for ${address}`);
 
-  await sqs.sendMessage({
-    QueueUrl: Queue.Mint.queueUrl,
-    MessageBody: JSON.stringify({
-      address: address,
-      entryId: id
-    }),
-  }).promise();
+  const message = {
+    address: address,
+    entryId: id
+  };
+
+  await redis.connect();
+  await redis.publish('mint', JSON.stringify(message));
+  await redis.quit()
 }
 
 export const hasMinted = async (address: string) => {
@@ -33,12 +32,11 @@ export const getImage = async () => {
   console.log(`Got ${entries.length} photos prepared.`)
 
   if (entries.length < 100) {
+    await redis.connect();
     for (let i = 0; i < 10; i++) {
-      await sqs.sendMessage({
-        QueueUrl: Queue.GenerateImage.queueUrl,
-        MessageBody: "make me a photo",
-      }).promise();
+      await redis.publish('generate', "make me a photo");
     }
+    await redis.quit()
     console.log(`Requested generation of 10 photos.`);
   }
 

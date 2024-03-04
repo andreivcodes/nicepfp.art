@@ -6,6 +6,10 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
-    "kysely-data-api": "^0.2.1"
+    "kysely": "^0.27.2",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.2"
   }
 }
