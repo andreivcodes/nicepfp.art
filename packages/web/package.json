@@ -60,7 +60,7 @@
     "react-infinite-scroller": "^1.2.6",
     "react-p5": "^1.3.33",
     "react-resizable-panels": "^2.0.12",
-    "sharp": "0.33.2",
+    "sharp": "^0.33.2",
     "sonner": "^1.4.3",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
