@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "sst bind next build --profile=nicepfp",
-    "dev": "sst bind next dev --profile=nicepfp",
+    "build": "next build --profile=nicepfp",
+    "dev": "next dev --profile=nicepfp",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint"
   },
