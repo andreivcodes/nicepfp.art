@@ -22,7 +22,7 @@ const ipfsClient = create({
   },
 });
 
-redis.subscribe("generate_image", (err, count) => {
+redis.subscribe("gen-img", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
@@ -32,8 +32,12 @@ redis.subscribe("generate_image", (err, count) => {
   }
 });
 
-redis.on("generate_image", async (_channel, _message) => {
+redis.on("message", (channel, message) => {
+  console.log(`Got message ${message} on ${channel}`)
+  generate_image();
+});
 
+const generate_image = async () => {
   console.log(`Generating image - ${new Date().toISOString()}`);
 
   const browser = await puppeteer.connect({
@@ -115,8 +119,6 @@ redis.on("generate_image", async (_channel, _message) => {
     `);
 
   console.log(`Inserted into db ipfsNFT: ${objIPFS.path}(https://ipfs.io/ipfs/${objIPFS.path}) - ${new Date().toISOString()}`);
-
-
-});
+}
 
 const sleep = (ms: number): Promise<void> => new Promise(res => setTimeout(res, ms));
