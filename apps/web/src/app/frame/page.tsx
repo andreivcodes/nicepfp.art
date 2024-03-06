@@ -101,8 +101,6 @@ export default async function Home({
 
   await lock(state.id)
 
-
-
   return (
     <div>
       <FrameContainer
