@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
