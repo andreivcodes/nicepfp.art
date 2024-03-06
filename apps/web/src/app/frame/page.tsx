@@ -30,18 +30,18 @@ export default async function Home({
   console.log(2)
   const reducer: FrameReducer<State> = (state, action) => {
     console.log(3)
-    if (frameMessage?.buttonIndex == 1 && state.src.length > 0) {
-      return {
-        src: state.src,
-        id: state.id
-      };
-    }
-    else {
-      return {
-        src: imgSrc,
-        id: id
-      };
-    }
+    // if (frameMessage?.buttonIndex == 1 && state.src.length > 0) {
+    //   return {
+    //     src: state.src,
+    //     id: state.id
+    //   };
+    // }
+    // else {
+    return {
+      src: imgSrc,
+      id: id
+    };
+    // }
   };
 
   console.log(4)
