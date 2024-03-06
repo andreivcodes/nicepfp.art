@@ -1,0 +1,25 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Entries {
+    id        String  @id @default(uuid())
+    ipfsImage String
+    ipfsNFT   String
+    signature String
+    locked    Boolean
+
+    @@map("entries")
+}
+
+model Minters {
+    id      String @id @default(uuid())
+    address String
+
+    @@map("minters")
+}

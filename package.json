@@ -1,9 +1,9 @@
 {
-  "private": true,
   "name": "nicepfp",
+  "version": "1.0.0",
+  "private": true,
   "workspaces": [
-    "libs/db",
-    "packages/web",
-    "packages/frame_images"
+    "libs/*",
+    "apps/*"
   ]
 }
