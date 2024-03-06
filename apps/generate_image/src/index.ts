@@ -113,7 +113,6 @@ const generate_image = async () => {
   console.log(`
     ipfsImage: https://ipfs.io/ipfs/${imageIPFS.path},
     ipfsNFT: ${objIPFS.path},
-    s3Image: ${""},
     signature: ${signature},
     locked: ${false}
     `);
