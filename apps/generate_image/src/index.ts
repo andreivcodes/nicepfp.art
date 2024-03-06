@@ -4,6 +4,7 @@ import puppeteer from "puppeteer";
 import EthCrypto from "eth-crypto";
 import { PrismaClient } from '@prisma/client'
 import { create } from "ipfs-http-client";
+import express from "express";
 
 dotenv_config();
 
@@ -35,6 +36,16 @@ redis.subscribe("gen-img", (err, count) => {
 redis.on("message", (channel, message) => {
   console.log(`Got message ${message} on ${channel}`)
   generate_image();
+});
+
+const app = express();
+
+app.get('/', (_req, res) => {
+  res.send("ok");
+});
+
+app.listen(3000, () => {
+  console.log(`Healthcheck is running at http://localhost:3000`);
 });
 
 const generate_image = async () => {

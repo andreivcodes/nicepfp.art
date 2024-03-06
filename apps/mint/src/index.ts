@@ -5,6 +5,7 @@ import { createWalletClient, http } from 'viem'
 import { polygon } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 import * as contractAbi from "./nicepfp_abi.json"
+import express from "express";
 
 dotenv_config();
 
@@ -21,9 +22,23 @@ redis.subscribe("mint", (err, count) => {
   }
 });
 
+const app = express();
+
+app.get('/', (_req, res) => {
+  res.send("ok");
+});
+
+app.listen(3000, () => {
+  console.log(`Healthcheck is running at http://localhost:3000`);
+});
+
+
 redis.on("mint", async (_channel, message) => {
   const { address, entryId }: { address: string, entryId: string } = JSON.parse(message);
+  await mint({ address, entryId });
+});
 
+const mint = async ({ address, entryId }: { address: string, entryId: string }) => {
   const minter = await prisma.minters.findFirst({ where: { address: address } });
   const entry = await prisma.entries.findFirst({ where: { id: entryId } });
 
@@ -58,5 +73,4 @@ redis.on("mint", async (_channel, message) => {
   await prisma.entries.delete({ where: { id: entry.id } })
 
   console.log(`Minted: ${entryId} to ${address}`);
-
-});
+}
