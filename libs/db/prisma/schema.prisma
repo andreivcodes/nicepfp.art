@@ -14,6 +14,9 @@ model Entries {
     signature String
     locked    Boolean
 
+    minted         Boolean @default(false)
+    minter_address String?
+
     @@map("entries")
 }
 

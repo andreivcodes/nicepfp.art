@@ -69,7 +69,7 @@ const mint = async ({ address, entryId }: { address: string, entryId: string }) 
   })
 
   await prisma.minters.create({ data: { address: address } })
-  await prisma.entries.delete({ where: { id: entry.id } })
+  await prisma.entries.update({ where: { id: entry.id }, data: { minted: true, minter_address: address } })
 
   console.log(`Minted: ${entryId} to ${address}`);
 }

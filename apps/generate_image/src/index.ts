@@ -117,7 +117,7 @@ const generate_image = async () => {
       ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
       ipfsNFT: objIPFS.path,
       signature: signature,
-      locked: false
+      locked: false,
     }
   })
 
