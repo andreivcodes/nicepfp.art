@@ -16,7 +16,7 @@ type State = {
   id: string
 };
 
-const initialState: State = { id: "none", src: "https://nicepfp.art/assets/welcome.png" };
+const initialState: State = { id: "none", src: "" };
 
 export default async function Home({
   searchParams,
