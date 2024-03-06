@@ -3,9 +3,10 @@
 import prisma from "@/lib/db"
 import Redis from "ioredis"
 
-const redis = new Redis(process.env.REDIS_URL!)
+
 
 export const mint = async (address: string, id: string) => {
+  const redis = new Redis(process.env.REDIS_URL!)
   console.log(`Add ${id} to mint queue for ${address}`);
 
   const message = {
@@ -24,7 +25,7 @@ export const hasMinted = async (address: string) => {
 }
 
 export const getImage = async () => {
-
+  const redis = new Redis(process.env.REDIS_URL!)
   const entries = await prisma.entries.findMany({ where: { locked: false } })
 
   console.log(`Got ${entries.length} photos prepared.`)
