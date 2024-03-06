@@ -48,12 +48,12 @@ export const getImage = async () => {
 
 export const unlock = async (id: string) => {
   if (!id.length) return
-  await prisma.entries.update({ where: { id }, data: { locked: false } })
+  await prisma.entries.update({ where: { id }, data: { locked: false } }).catch(() => { })
   console.log(`Unlocked ${id}`);
 }
 
 export const lock = async (id: string) => {
   if (!id.length) return
-  await prisma.entries.update({ where: { id }, data: { locked: true } })
+  await prisma.entries.update({ where: { id }, data: { locked: true } }).catch(() => { })
   console.log(`Locked ${id}`);
 }
