@@ -29,10 +29,10 @@ export default async function Home({
 
   const { id, imgSrc } = await getImage();
   const reducer: FrameReducer<State> = (state, action) => {
-    if (frameMessage?.buttonIndex == 1 && previousFrame.prevState) {
+    if (frameMessage?.buttonIndex == 1 && state.src.length > 0) {
       return {
-        src: previousFrame.prevState.src,
-        id: previousFrame.prevState.id
+        src: state.src,
+        id: state.id
       };
     }
     else {
@@ -103,6 +103,8 @@ export default async function Home({
     await unlock(previousFrame.prevState.id);
 
   await lock(state.id)
+
+
 
   return (
     <div>

@@ -32,8 +32,6 @@ export const getImage = async () => {
 
   const randomIdResult = await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM entries ORDER BY RAND() LIMIT 1`;
 
-  console.log(`result: ${JSON.stringify(randomIdResult)}`);
-
   const randomId = randomIdResult.length > 0 ? randomIdResult[0].id : null;
 
   if (!randomId) {
@@ -41,7 +39,6 @@ export const getImage = async () => {
   }
 
   const randomEntry = await prisma.entries.findFirst({ where: { id: randomId } });
-
 
   if (!randomEntry)
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" }
