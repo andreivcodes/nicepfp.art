@@ -4,7 +4,16 @@ const nextConfig = {
     serverComponentsExternalPackages: ["ipfs-utils", "eth-crypto"]
   },
   images: {
-    remotePatterns: [{ hostname: "nicepfp.infura-ipfs.io" }, { hostname: "cloudflare-ipfs.com" }],
+    remotePatterns: [
+      {
+        hostname: "*",
+        protocol: "http",
+      },
+      {
+        hostname: "*",
+        protocol: "https",
+      },
+    ],
   },
   webpack: (config, options) => {
     if (!options.dev) {
