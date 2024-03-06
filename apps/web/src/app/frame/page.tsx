@@ -16,7 +16,7 @@ type State = {
   id: string
 };
 
-const initialState: State = { id: "none", src: "" };
+const initialState: State = { id: "", src: "" };
 
 export default async function Home({
   searchParams,
