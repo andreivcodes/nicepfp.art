@@ -11,6 +11,9 @@ import {
 import { getAddressForFid } from "frames.js"
 import { getImage, hasMinted, lock, mint, unlock } from "./actions";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type State = {
   id: string | null
   src: string | null
