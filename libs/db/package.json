@@ -1,9 +1,5 @@
 {
   "name": "@nicepfp/db",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "devDependencies": {
-    "prisma": "^5.10.2"
-  }
+  "license": "MIT"
 }
