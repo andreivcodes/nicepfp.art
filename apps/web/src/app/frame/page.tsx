@@ -70,7 +70,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   let alreadyMinted = await hasMinted(address)
 
   if (frameMessage?.buttonIndex == 1) {
-    if (previousFrame.prevState != null && previousFrame.prevState.id != null && previousFrame.prevState.id.length > 0 && frameMessage.recastedCast) {
+    if (previousFrame.prevState != null && previousFrame.prevState.id != null && frameMessage.recastedCast) {
       await mint(address, previousFrame.prevState.id)
       alreadyMinted = true;
     }
