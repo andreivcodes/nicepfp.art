@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ["ipfs-utils", "eth-crypto"]
+    serverComponentsExternalPackages: ["ipfs-utils", "eth-crypto"],
   },
   images: {
     remotePatterns: [
@@ -14,7 +14,7 @@ const nextConfig = {
         protocol: "https",
       },
     ],
-  }
+  },
 };
 
 export default nextConfig;

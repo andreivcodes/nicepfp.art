@@ -24,12 +24,11 @@ export const setup = (_p5, canvasParentRef) => {
   model = ml5.sketchRNN("https://storage.googleapis.com/quickdraw-models/sketchRNN/large_models/face.gen.json");
 
   if (p5.windowWidth < 1024) {
-    cnv = p5.createCanvas(p5.windowWidth * 90 / 100, p5.windowWidth * 90 / 100).parent(canvasParentRef);
+    cnv = p5.createCanvas((p5.windowWidth * 90) / 100, (p5.windowWidth * 90) / 100).parent(canvasParentRef);
   } else {
     cnv = p5.createCanvas(512, 512).parent(canvasParentRef);
   }
   p5.background(255);
-
 
   // run sketchRNN
   startDrawing();

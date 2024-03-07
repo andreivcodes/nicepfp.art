@@ -8,15 +8,15 @@ import {
   getPreviousFrame,
   useFramesReducer,
 } from "frames.js/next/server";
-import { getAddressForFid } from "frames.js"
+import { getAddressForFid } from "frames.js";
 import { getImage, hasMinted, lock, mint, unlock } from "./actions";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 type State = {
-  id: string
-  src: string
+  id: string;
+  src: string;
 };
 
 const initialState: State = { id: "null", src: "null" };
@@ -32,10 +32,9 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     if (buttonIndex == 1 && state.src != "null") {
       return {
         id: state.id,
-        src: state.src
+        src: state.src,
       };
-    }
-    else {
+    } else {
       return {
         id: id,
         src: imgSrc,
@@ -53,25 +52,22 @@ export default async function Home({ searchParams }: NextServerPageProps) {
         state={state}
         previousFrame={previousFrame}
       >
-        <FrameImage src={`${process.env.NEXT_PUBLIC_HOST}/assets/welcome.png`} aspectRatio="1:1">
-        </FrameImage>
-        <FrameButton>
-          Generate nicepfp
-        </FrameButton>
+        <FrameImage src={`${process.env.NEXT_PUBLIC_HOST}/assets/welcome.png`} aspectRatio="1:1"></FrameImage>
+        <FrameButton>Generate nicepfp</FrameButton>
       </FrameContainer>
     );
   }
 
   const address = await getAddressForFid({
     fid: frameMessage?.requesterFid ?? 1,
-    options: { fallbackToCustodyAddress: true }
+    options: { fallbackToCustodyAddress: true },
   });
 
-  let alreadyMinted = await hasMinted(address)
+  let alreadyMinted = await hasMinted(address);
 
   if (frameMessage?.buttonIndex == 1) {
     if (previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
-      await mint(address, previousFrame.prevState.id)
+      await mint(address, previousFrame.prevState.id);
       alreadyMinted = true;
     }
   }
@@ -89,9 +85,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
             You already minted your nicepfp! ❤️
           </div>
         </FrameImage>
-        <FrameButton>
-          Thanks!
-        </FrameButton>
+        <FrameButton>Thanks!</FrameButton>
       </FrameContainer>
     );
   }
@@ -99,8 +93,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   if (previousFrame != null && previousFrame.prevState != null && previousFrame.prevState.id != "null")
     await unlock(previousFrame.prevState.id);
 
-  if (state.id != "null")
-    await lock(state.id)
+  if (state.id != "null") await lock(state.id);
 
   if (state.src != "null")
     return (
@@ -110,14 +103,9 @@ export default async function Home({ searchParams }: NextServerPageProps) {
         state={state}
         previousFrame={previousFrame}
       >
-        <FrameImage src={state.src} aspectRatio="1:1">
-        </FrameImage>
-        <FrameButton>
-          {frameMessage?.recastedCast ? "Mint" : "Recast to mint"}
-        </FrameButton>
-        <FrameButton>
-          Redraw
-        </FrameButton>
+        <FrameImage src={state.src} aspectRatio="1:1"></FrameImage>
+        <FrameButton>{frameMessage?.recastedCast ? "Mint" : "Recast to mint"}</FrameButton>
+        <FrameButton>Redraw</FrameButton>
       </FrameContainer>
     );
 
@@ -129,11 +117,8 @@ export default async function Home({ searchParams }: NextServerPageProps) {
       previousFrame={previousFrame}
     >
       <FrameImage>
-        <div tw="w-full h-full bg-white text-black justify-center items-center flex">
-          Oops, something went wrong 😑
-        </div>
+        <div tw="w-full h-full bg-white text-black justify-center items-center flex">Oops, something went wrong 😑</div>
       </FrameImage>
     </FrameContainer>
   );
-
 }

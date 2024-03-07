@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import EthCrypto from "eth-crypto";
 import { create } from "ipfs-http-client";
@@ -10,18 +10,16 @@ const ipfsClient = create({
   port: 5001,
   protocol: "https",
   headers: {
-    authorization: "Basic " +
-      Buffer.from(
-        process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET
-      ).toString("base64"),
+    authorization:
+      "Basic " + Buffer.from(process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET).toString("base64"),
   },
 });
 
 export const getIpfs = async (imageBase64: string) => {
   let response = {
     path: "",
-    signature: ""
-  }
+    signature: "",
+  };
 
   const imageBuffer = Buffer.from(imageBase64.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
@@ -38,14 +36,11 @@ export const getIpfs = async (imageBase64: string) => {
   response.path = ipfsObj.path;
 
   try {
-    const message = EthCrypto.hash.keccak256([
-      { type: "string", value: response.path },
-    ]);
+    const message = EthCrypto.hash.keccak256([{ type: "string", value: response.path }]);
     response.signature = EthCrypto.sign(hexPrivateKey, message);
-  }
-  catch (e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
   }
 
-  return response
-}
+  return response;
+};

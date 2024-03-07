@@ -1,16 +1,9 @@
-"use client"
+"use client";
 
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import {
-  useAccount,
-  useConnect,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-  useSwitchNetwork,
-} from "wagmi";
-import { setup, draw, startDrawing, captureFrame } from "../lib/sketch"
-import contractJson from "../abi/nicepfp.json"
+import { useAccount, useConnect, useContractWrite, useNetwork, usePrepareContractWrite, useSwitchNetwork } from "wagmi";
+import { setup, draw, startDrawing, captureFrame } from "../lib/sketch";
+import contractJson from "../abi/nicepfp.json";
 import { Brush } from "lucide-react";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
@@ -19,18 +12,16 @@ import { getIpfs } from "@/app/actions";
 const Sketch = dynamic(() => import("react-p5"), { ssr: false });
 const isServer = () => typeof window === "undefined";
 
-
 export default function Container() {
-
   return (
-    <Card className="p-1 md:min-w-[512px] md:min-h-[512px]">
+    <Card className="p-1 md:min-h-[512px] md:min-w-[512px]">
       {!isServer() && (
-        <CardContent className="flex flex-col p-1 gap-2">
-          <div className="md:min-w-[512px] md:min-h-[512px]">
+        <CardContent className="flex flex-col gap-2 p-1">
+          <div className="md:min-h-[512px] md:min-w-[512px]">
             <Sketch setup={setup} draw={draw} />
           </div>
           <Button
-            className="self-end w-12 h-12 bg-purple-500 px-2 py-2 font-bold hover:bg-purple-700 active:bg-purple-600"
+            className="h-12 w-12 self-end bg-purple-500 px-2 py-2 font-bold hover:bg-purple-700 active:bg-purple-600"
             onClick={() => {
               startDrawing();
             }}
@@ -39,15 +30,14 @@ export default function Container() {
           </Button>
 
           <MintButton />
-
         </CardContent>
       )}
-    </Card >
+    </Card>
   );
 }
 
 const MintButton = () => {
-  const [ipfsData, setIpfsData] = useState({ path: "", signature: "" })
+  const [ipfsData, setIpfsData] = useState({ path: "", signature: "" });
   const { address, isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
   const { switchNetwork } = useSwitchNetwork();
@@ -63,7 +53,6 @@ const MintButton = () => {
   const contractWrite = useContractWrite(config);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
     if (contractWrite.isError || contractWrite.isSuccess) setLoading(false);
     if (ipfsData && ipfsData.path && contractWrite.isIdle && !contractWrite.isError) {
@@ -77,7 +66,9 @@ const MintButton = () => {
     }
   }, [chain, switchNetwork]);
 
-  useEffect(() => { console.log(ipfsData) }, [ipfsData])
+  useEffect(() => {
+    console.log(ipfsData);
+  }, [ipfsData]);
 
   const handleMintButtonClick = () => {
     setLoading(true);
@@ -85,7 +76,7 @@ const MintButton = () => {
     const run = async (img: string) => {
       let data = await getIpfs(img);
       setIpfsData(data);
-    }
+    };
 
     const image = captureFrame();
     run(image);

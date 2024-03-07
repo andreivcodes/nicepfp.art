@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   description: "Simple. Free. Unlimited. Forever.",
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{

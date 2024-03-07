@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import { ShowcaseItem } from "./showcase-item";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export const ShowcaseList = () => {
-
   const [supply, setSupply] = useState(0);
   const [maxItems, setMaxItems] = useState(12);
 
@@ -27,12 +26,9 @@ export const ShowcaseList = () => {
     <div className="w-full px-8">
       <Card>
         <CardHeader>
-          <CardTitle className="font-light text-md">
+          <CardTitle className="text-md font-light">
             {supply} very nice pfps -{" "}
-            <Link
-              className="underline"
-              href="https://opensea.io/collection/nicepfp-art"
-            >
+            <Link className="underline" href="https://opensea.io/collection/nicepfp-art">
               View OpenSea collection
             </Link>
           </CardTitle>
@@ -57,4 +53,4 @@ export const ShowcaseList = () => {
       </Card>
     </div>
   );
-}
+};
