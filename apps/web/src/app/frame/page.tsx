@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     }
   }
 
-  if (true) {
+  if (alreadyMinted) {
     return (
       <FrameContainer
         pathname="/frame"
@@ -96,7 +96,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     );
   }
 
-  if (previousFrame.prevState.id != "null")
+  if (previousFrame != null && previousFrame.prevState != null && previousFrame.prevState.id != "null")
     await unlock(previousFrame.prevState.id);
 
   if (state.id != "null")
