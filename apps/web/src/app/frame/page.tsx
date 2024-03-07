@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     }
   }
 
-  if (alreadyMinted) {
+  if (true) {
     return (
       <FrameContainer
         pathname="/frame"
@@ -120,21 +120,20 @@ export default async function Home({ searchParams }: NextServerPageProps) {
         </FrameButton>
       </FrameContainer>
     );
-  else
-    return (
-      <FrameContainer
-        pathname="/frame"
-        postUrl="/frame/post"
-        state={state}
-        previousFrame={previousFrame}
-      >
-        <FrameImage>
-          <div tw="w-full h-full bg-white text-black justify-center items-center flex">
-            Oops, something went wrong 😑
-          </div>
-        </FrameImage>
 
-      </FrameContainer>
-    );
+  return (
+    <FrameContainer
+      pathname="/frame"
+      postUrl="/frame/post"
+      state={state}
+      previousFrame={previousFrame}
+    >
+      <FrameImage>
+        <div tw="w-full h-full bg-white text-black justify-center items-center flex">
+          Oops, something went wrong 😑
+        </div>
+      </FrameImage>
+    </FrameContainer>
+  );
 
 }
