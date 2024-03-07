@@ -32,7 +32,7 @@ app.listen(3000, () => {
 });
 
 
-redis.on("mint", async (_channel, message) => {
+redis.on("message", async (_channel, message) => {
   const { address, entryId }: { address: string, entryId: string } = JSON.parse(message);
   await mint({ address, entryId });
 });
