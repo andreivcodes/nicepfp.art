@@ -48,8 +48,8 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   //if (previousFrame.prevState == null) {
   return (
     <FrameContainer
-      pathname="/frame"
-      postUrl="/frame/post"
+      pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+      postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
       state={state}
       previousFrame={previousFrame}
     >
@@ -79,8 +79,8 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   // if (alreadyMinted) {
   //   return (
   //     <FrameContainer
-  //       pathname="/frame"
-  //       postUrl="/frame/post"
+  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
   //       state={state}
   //       previousFrame={previousFrame}
   //     >
@@ -105,8 +105,8 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   // if (state.src != "null")
   //   return (
   //     <FrameContainer
-  //       pathname="/frame"
-  //       postUrl="/frame/post"
+  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
   //       state={state}
   //       previousFrame={previousFrame}
   //     >
@@ -123,8 +123,8 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   // return (
   //   <FrameContainer
-  //     pathname="/frame"
-  //     postUrl="/frame/post"
+  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
   //     state={state}
   //     previousFrame={previousFrame}
   //   >
