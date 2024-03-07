@@ -53,7 +53,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
       state={state}
       previousFrame={previousFrame}
     >
-      <FrameImage src="https://nicepfp.art/assets/welcome.png" aspectRatio="1:1">
+      <FrameImage src={`${process.env.NEXT_PUBLIC_HOST}/assets/welcome.png`} aspectRatio="1:1">
       </FrameImage>
       <FrameButton>
         Generate nicepfp
