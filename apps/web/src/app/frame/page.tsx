@@ -26,10 +26,10 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const reducer: FrameReducer<State> = (state, action) => {
     const buttonIndex = action.postBody?.untrustedData.buttonIndex;
-    if (buttonIndex == 1 && state.src != null && state.src.length > 0) {
+    if (buttonIndex == 1 && state.src != null) {
       return {
-        src: state.src,
-        id: state.id
+        id: state.id,
+        src: state.src
       };
     }
     else {
@@ -42,7 +42,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  if (previousFrame.prevState == null || state.src == null) {
+  if (state.src == null) {
     return (
       <FrameContainer
         pathname="/frame"
@@ -67,7 +67,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   let alreadyMinted = await hasMinted(address)
 
   if (frameMessage?.buttonIndex == 1) {
-    if (previousFrame.prevState.id != null && previousFrame.prevState.id.length > 0 && frameMessage.recastedCast) {
+    if (previousFrame.prevState != null && previousFrame.prevState.id != null && previousFrame.prevState.id.length > 0 && frameMessage.recastedCast) {
       await mint(address, previousFrame.prevState.id)
       alreadyMinted = true;
     }
@@ -93,7 +93,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     );
   }
 
-  if (previousFrame.prevState.id)
+  if (previousFrame.prevState != null && previousFrame.prevState.id)
     await unlock(previousFrame.prevState.id);
 
   if (state.id)
