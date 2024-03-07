@@ -42,7 +42,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  if (!previousFrame.prevState || !state.src) {
+  if (previousFrame.prevState == null || state.src == null) {
     return (
       <FrameContainer
         pathname="/frame"
