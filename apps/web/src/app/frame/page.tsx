@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  if (state.src == "null") {
+  if (previousFrame.prevState == null) {
     return (
       <FrameContainer
         pathname="/frame"
@@ -70,7 +70,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   let alreadyMinted = await hasMinted(address)
 
   if (frameMessage?.buttonIndex == 1) {
-    if (previousFrame.prevState != null && previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
+    if (previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
       await mint(address, previousFrame.prevState.id)
       alreadyMinted = true;
     }
@@ -96,13 +96,13 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     );
   }
 
-  if (previousFrame.prevState != null && previousFrame.prevState.id != "null")
+  if (previousFrame.prevState.id != "null")
     await unlock(previousFrame.prevState.id);
 
   if (state.id != "null")
     await lock(state.id)
 
-  if (state.src)
+  if (state.src != "null")
     return (
       <FrameContainer
         pathname="/frame"
