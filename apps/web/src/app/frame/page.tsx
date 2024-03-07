@@ -15,11 +15,11 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 type State = {
-  id: string | null
-  src: string | null
+  id: string
+  src: string
 };
 
-const initialState: State = { id: null, src: null };
+const initialState: State = { id: "null", src: "null" };
 
 export default async function Home({ searchParams }: NextServerPageProps) {
   const previousFrame = getPreviousFrame<State>(searchParams);
@@ -29,7 +29,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const reducer: FrameReducer<State> = (state, action) => {
     const buttonIndex = action.postBody?.untrustedData.buttonIndex;
-    if (buttonIndex == 1 && state.src != null) {
+    if (buttonIndex == 1 && state.src != "null") {
       return {
         id: state.id,
         src: state.src
@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  if (state.src == null) {
+  if (state.src == "null") {
     return (
       <FrameContainer
         pathname="/frame"
@@ -70,7 +70,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
   let alreadyMinted = await hasMinted(address)
 
   if (frameMessage?.buttonIndex == 1) {
-    if (previousFrame.prevState != null && previousFrame.prevState.id != null && frameMessage.recastedCast) {
+    if (previousFrame.prevState != null && previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
       await mint(address, previousFrame.prevState.id)
       alreadyMinted = true;
     }
@@ -96,10 +96,10 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     );
   }
 
-  if (previousFrame.prevState != null && previousFrame.prevState.id)
+  if (previousFrame.prevState != null && previousFrame.prevState.id != "null")
     await unlock(previousFrame.prevState.id);
 
-  if (state.id)
+  if (state.id != "null")
     await lock(state.id)
 
   if (state.src)
