@@ -45,7 +45,82 @@ export default async function Home({ searchParams }: NextServerPageProps) {
 
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
-  //if (previousFrame.prevState == null) {
+  if (previousFrame.prevState == null) {
+    return (
+      <FrameContainer
+        pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+        postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
+        state={state}
+        previousFrame={previousFrame}
+      >
+        <FrameImage src={`${process.env.NEXT_PUBLIC_HOST}/assets/welcome.png`} aspectRatio="1:1">
+        </FrameImage>
+        <FrameButton>
+          Generate nicepfp
+        </FrameButton>
+      </FrameContainer>
+    );
+  }
+
+  const address = await getAddressForFid({
+    fid: frameMessage?.requesterFid ?? 1,
+    options: { fallbackToCustodyAddress: true }
+  });
+
+  let alreadyMinted = await hasMinted(address)
+
+  if (frameMessage?.buttonIndex == 1) {
+    if (previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
+      await mint(address, previousFrame.prevState.id)
+      alreadyMinted = true;
+    }
+  }
+
+  if (alreadyMinted) {
+    return (
+      <FrameContainer
+        pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+        postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
+        state={state}
+        previousFrame={previousFrame}
+      >
+        <FrameImage>
+          <div tw="w-full h-full bg-white text-black justify-center items-center flex">
+            You already minted your nicepfp! ❤️
+          </div>
+        </FrameImage>
+        <FrameButton>
+          Thanks!
+        </FrameButton>
+      </FrameContainer>
+    );
+  }
+
+  if (previousFrame != null && previousFrame.prevState != null && previousFrame.prevState.id != "null")
+    await unlock(previousFrame.prevState.id);
+
+  if (state.id != "null")
+    await lock(state.id)
+
+  if (state.src != "null")
+    return (
+      <FrameContainer
+        pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+        postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
+        state={state}
+        previousFrame={previousFrame}
+      >
+        <FrameImage src={state.src} aspectRatio="1:1">
+        </FrameImage>
+        <FrameButton>
+          {frameMessage?.recastedCast ? "Mint" : "Recast to mint"}
+        </FrameButton>
+        <FrameButton>
+          Redraw
+        </FrameButton>
+      </FrameContainer>
+    );
+
   return (
     <FrameContainer
       pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
@@ -53,87 +128,12 @@ export default async function Home({ searchParams }: NextServerPageProps) {
       state={state}
       previousFrame={previousFrame}
     >
-      <FrameImage src={`${process.env.NEXT_PUBLIC_HOST}/assets/welcome.png`} aspectRatio="1:1">
+      <FrameImage>
+        <div tw="w-full h-full bg-white text-black justify-center items-center flex">
+          Oops, something went wrong 😑
+        </div>
       </FrameImage>
-      <FrameButton>
-        Generate nicepfp
-      </FrameButton>
     </FrameContainer>
   );
-  // }
-
-  // const address = await getAddressForFid({
-  //   fid: frameMessage?.requesterFid ?? 1,
-  //   options: { fallbackToCustodyAddress: true }
-  // });
-
-  // let alreadyMinted = await hasMinted(address)
-
-  // if (frameMessage?.buttonIndex == 1) {
-  //   if (previousFrame.prevState.id != "null" && frameMessage.recastedCast) {
-  //     await mint(address, previousFrame.prevState.id)
-  //     alreadyMinted = true;
-  //   }
-  // }
-
-  // if (alreadyMinted) {
-  //   return (
-  //     <FrameContainer
-  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
-  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
-  //       state={state}
-  //       previousFrame={previousFrame}
-  //     >
-  //       <FrameImage>
-  //         <div tw="w-full h-full bg-white text-black justify-center items-center flex">
-  //           You already minted your nicepfp! ❤️
-  //         </div>
-  //       </FrameImage>
-  //       <FrameButton>
-  //         Thanks!
-  //       </FrameButton>
-  //     </FrameContainer>
-  //   );
-  // }
-
-  // if (previousFrame != null && previousFrame.prevState != null && previousFrame.prevState.id != "null")
-  //   await unlock(previousFrame.prevState.id);
-
-  // if (state.id != "null")
-  //   await lock(state.id)
-
-  // if (state.src != "null")
-  //   return (
-  //     <FrameContainer
-  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
-  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
-  //       state={state}
-  //       previousFrame={previousFrame}
-  //     >
-  //       <FrameImage src={state.src} aspectRatio="1:1">
-  //       </FrameImage>
-  //       <FrameButton>
-  //         {frameMessage?.recastedCast ? "Mint" : "Recast to mint"}
-  //       </FrameButton>
-  //       <FrameButton>
-  //         Redraw
-  //       </FrameButton>
-  //     </FrameContainer>
-  //   );
-
-  // return (
-  //   <FrameContainer
-  // pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
-  // postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
-  //     state={state}
-  //     previousFrame={previousFrame}
-  //   >
-  //     <FrameImage>
-  //       <div tw="w-full h-full bg-white text-black justify-center items-center flex">
-  //         Oops, something went wrong 😑
-  //       </div>
-  //     </FrameImage>
-  //   </FrameContainer>
-  // );
 
 }
