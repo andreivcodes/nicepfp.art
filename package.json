@@ -13,7 +13,7 @@
     "start-web": "yarn workspace @nicepfp/web start"
   },
   "devDependencies": {
-    "prisma": "^5.10.2"
+    "prisma": "^5.11.0"
   },
   "prisma": {
     "schema": "./libs/db/prisma/schema.prisma"
