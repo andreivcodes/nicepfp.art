@@ -92,6 +92,14 @@ const MintButton = () => {
             {connector.name}
           </Button>
         ))}
+        {connectors.length == 0 && (
+          <Button
+            className="w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700 active:bg-purple-600"
+            disabled={true}
+          >
+            Web3 connector not found
+          </Button>
+        )}
         {error && <div>{error.message}</div>}
       </div>
     );
