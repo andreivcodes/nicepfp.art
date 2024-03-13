@@ -2,23 +2,20 @@
   "name": "nicepfp",
   "version": "1.0.0",
   "private": true,
+  "workspaces": ["libs/*", "apps/*"],
   "scripts": {
-    "postinstall": "npx prisma generate",
-    "build-web": "yarn workspace @nicepfp/web build",
-    "build-mint": "yarn workspace @nicepfp/mint build",
     "build-gen-img": "yarn workspace @nicepfp/gen-img build",
-    "start-web": "yarn workspace @nicepfp/web start",
+    "build-mint": "yarn workspace @nicepfp/mint build",
+    "build-web": "yarn workspace @nicepfp/web build",
+    "postinstall": "npx prisma generate",
+    "start-gen-img": "yarn workspace @nicepfp/gen-img start",
     "start-mint": "yarn workspace @nicepfp/mint start",
-    "start-gen-img": "yarn workspace @nicepfp/gen-img start"
+    "start-web": "yarn workspace @nicepfp/web start"
   },
   "devDependencies": {
     "prisma": "^5.10.2"
   },
   "prisma": {
     "schema": "./libs/db/prisma/schema.prisma"
-  },
-  "workspaces": [
-    "libs/*",
-    "apps/*"
-  ]
+  }
 }
