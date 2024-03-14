@@ -22,7 +22,7 @@ redis.subscribe("mint", (err, count) => {
 const app = express();
 
 app.get("/", (_req, res) => {
-  res.send("ok");
+  res.send("OK");
 });
 
 app.listen(3000, () => {
