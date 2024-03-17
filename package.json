@@ -2,7 +2,10 @@
   "name": "nicepfp",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["libs/*", "apps/*"],
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ],
   "scripts": {
     "build-gen-img": "yarn workspace @nicepfp/gen-img build",
     "build-mint": "yarn workspace @nicepfp/mint build",
