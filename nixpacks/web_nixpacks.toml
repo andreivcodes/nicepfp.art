@@ -3,6 +3,8 @@ buildImage = 'ghcr.io/railwayapp/nixpacks:latest'
 
 [start]
 cmd = 'yarn start-web'
+nixPkgs = ['...', 'node-gyp']
 
 [phases.build]
 cmds = ['yarn build-web']
+nixPkgs = ['...', 'node-gyp']
