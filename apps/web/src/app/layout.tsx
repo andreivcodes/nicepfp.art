@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <script defer data-domain="nicepfp.art" src="https://plausible.andreiv.xyz/js/script.js"></script>
-      </Head>
-
+      <Script defer data-domain="nicepfp.art" src="https://plausible.andreiv.xyz/js/script.js" />
       <body className={inter.className}>{children}</body>
     </html>
   );
