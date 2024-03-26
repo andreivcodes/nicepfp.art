@@ -12,9 +12,9 @@
   "dependencies": {
     "@prisma/client": "^5.11.0",
     "dotenv": "^16.4.5",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "ioredis": "^5.3.2",
-    "viem": "^2.8.18"
+    "viem": "^2.9.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
