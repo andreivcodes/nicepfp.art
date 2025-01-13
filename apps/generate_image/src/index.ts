@@ -70,11 +70,22 @@ async function connectToBrowserless(): Promise<Browser> {
   )}`;
 
   console.log("Connecting to browserless service...");
-  const browser = await puppeteer.connect({ browserURL: url });
-  if (!browser) throw new Error("Browser initialization failed");
+  console.log(`Using URL: ${url}`); // Log the URL being used
 
-  console.log("Successfully connected to browserless");
-  return browser;
+  try {
+    const browser = await puppeteer.connect({
+      browserURL: url,
+      defaultViewport: null,
+    });
+
+    if (!browser) throw new Error("Browser initialization failed");
+
+    console.log("Successfully connected to browserless");
+    return browser;
+  } catch (error) {
+    console.error("Failed to connect to browserless:", error);
+    throw error;
+  }
 }
 
 async function connectWithRetry(
