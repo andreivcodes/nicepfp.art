@@ -6,7 +6,7 @@ services:
       platforms:
         - "linux/amd64"
     ports:
-      - "3000:3000"
+      - "3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -22,6 +22,13 @@ services:
         condition: service_completed_successfully
     networks:
       - nicepfp-network
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web-app.rule=Host(`nicepfp.art`)"
+      - "traefik.http.routers.web-app.entrypoints=websecure"
+      - "traefik.http.routers.web-app.tls.certResolver=letsencrypt"
+      - "traefik.http.services.web-app.loadbalancer.server.port=3000"
 
   generate-image:
     build:
@@ -114,6 +121,8 @@ services:
 networks:
   nicepfp-network:
     driver: bridge
+  dokploy-network:
+    external: true
 
 volumes:
   redis-data:
