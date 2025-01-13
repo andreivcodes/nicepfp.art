@@ -8,68 +8,81 @@ import express from "express";
 
 dotenv_config();
 
+// Constants
+const CONTRACT_ADDRESS = "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34";
+
+// Initialize services
 const prisma = new PrismaClient();
 const redis = new Redis(process.env.REDIS_URL!);
 
-redis.subscribe("mint", (err, count) => {
-  if (err) {
-    console.error("Failed to subscribe: %s", err.message);
-  } else {
-    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
-  }
-});
-
+// Healthcheck server
 const app = express();
-
 app.get("/", (_req, res) => {
   res.send("OK");
 });
+app.listen(3000, () =>
+  console.log(`Healthcheck running at http://localhost:3000`),
+);
 
-app.listen(3000, () => {
-  console.log(`Healthcheck is running at http://localhost:3000`);
+// Redis subscription
+redis.subscribe("mint", (err, count) => {
+  if (err) console.error("Failed to subscribe:", err.message);
+  else console.log(`Subscribed to ${count} channels.`);
 });
 
 redis.on("message", async (_channel, message) => {
-  const { address, entryId }: { address: string; entryId: string } = JSON.parse(message);
-  await mint({ address, entryId });
+  try {
+    const { address, entryId } = JSON.parse(message) as {
+      address: string;
+      entryId: string;
+    };
+    await mintNFT(address, entryId);
+  } catch (error) {
+    console.error("Error processing mint request:", error);
+  }
 });
 
-const mint = async ({ address, entryId }: { address: string; entryId: string }) => {
-  const minter = await prisma.minters.findFirst({ where: { address: address } });
-  const entry = await prisma.entries.findFirst({ where: { id: entryId } });
+// Minting logic
+async function mintNFT(address: string, entryId: string): Promise<void> {
+  console.log(`Processing mint request for ${address} with entry ${entryId}`);
 
+  const minter = await prisma.minters.findFirst({ where: { address } });
   if (minter) {
-    console.log(`Double mint for ${address}`);
+    console.log(`Double mint attempt for ${address}`);
     return;
   }
 
+  const entry = await prisma.entries.findFirst({ where: { id: entryId } });
   if (!entry) {
-    console.log(`Entry ${entry} not found. This should never happen.`);
+    console.error(`Entry ${entryId} not found`);
     return;
   }
 
-  console.log(`Mint: ${entryId} to ${address}`);
-
-  const account = privateKeyToAccount(process.env.PRIVATE_KEY! as `0x${string}`);
-
+  const account = privateKeyToAccount(
+    process.env.PRIVATE_KEY! as `0x${string}`,
+  );
   const walletClient = createWalletClient({
     account,
     chain: polygon,
     transport: http(),
   });
 
+  console.log(`Minting NFT for ${address} with IPFS hash ${entry.ipfsNFT}`);
   await walletClient.writeContract({
-    address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
+    address: CONTRACT_ADDRESS,
     abi: contract.abi,
     functionName: "safeMint",
     args: [address, entry.ipfsNFT, entry.signature],
   });
 
-  await prisma.minters.create({ data: { address: address } });
-  await prisma.entries.update({ where: { id: entry.id }, data: { minted: true, minter_address: address } });
+  await prisma.minters.create({ data: { address } });
+  await prisma.entries.update({
+    where: { id: entry.id },
+    data: { minted: true, minter_address: address },
+  });
 
-  console.log(`Minted: ${entryId} to ${address}`);
-};
+  console.log(`Minted NFT for ${address}`);
+}
 
 const contract = {
   abi: [

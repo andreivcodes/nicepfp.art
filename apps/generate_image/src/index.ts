@@ -8,9 +8,14 @@ import express from "express";
 
 dotenv_config();
 
+// Constants
+const DEFAULT_IPFS_HASH = "QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH";
+const BROWSERLESS_RETRIES = 3;
+const BROWSERLESS_RETRY_DELAY = 1000;
+
+// Initialize services
 const prisma = new PrismaClient();
 const redis = new Redis(process.env.REDIS_URL!);
-const hexPrivateKey = process.env.PRIVATE_KEY ?? "";
 const ipfsClient = create({
   host: "ipfs.infura.io",
   port: 5001,
@@ -24,37 +29,32 @@ const ipfsClient = create({
   },
 });
 
-redis.subscribe("gen-img", (err, count) => {
-  if (err) {
-    console.error("Failed to subscribe: %s", err.message);
-  } else {
-    console.log(
-      `Subscribed successfully! This client is currently subscribed to ${count} channels.`,
-    );
-  }
-});
-
-redis.on("message", (channel, message) => {
-  console.log(`Got message ${message} on ${channel}`);
-  generate_image();
-});
-
+// Healthcheck server
 const app = express();
-
 app.get("/", (_req, res) => {
   res.send("OK");
 });
+app.listen(3000, () =>
+  console.log(`Healthcheck running at http://localhost:3000`),
+);
 
-app.listen(3000, () => {
-  console.log(`Healthcheck is running at http://localhost:3000`);
+// Redis subscription
+redis.subscribe("gen-img", (err, count) => {
+  if (err) console.error("Failed to subscribe:", err.message);
+  else console.log(`Subscribed to ${count} channels.`);
 });
 
-async function connectToBrowserless(): Promise<Browser> {
-  const launchArgs = JSON.stringify({
-    args: ["--no-sandbox"],
-    headless: true,
-  });
+redis.on("message", async (channel, message) => {
+  console.log(`Received message on ${channel}: ${message}`);
+  try {
+    await generateImage();
+  } catch (error) {
+    console.error("Error generating image:", error);
+  }
+});
 
+// Browserless connection
+async function connectToBrowserless(): Promise<Browser> {
   const browserlessUrl = process.env.BROWSERLESS_URL;
   const browserlessToken = process.env.BROWSERLESS_TOKEN;
 
@@ -62,149 +62,109 @@ async function connectToBrowserless(): Promise<Browser> {
     throw new Error("Browserless URL or token not configured");
   }
 
-  const wsUrl = `${browserlessUrl}/?token=${browserlessToken}&launch=${launchArgs}`;
+  const url = `${browserlessUrl}/?token=${browserlessToken}&launch=${JSON.stringify(
+    {
+      args: ["--no-sandbox"],
+      headless: true,
+    },
+  )}`;
 
   console.log("Connecting to browserless service...");
+  const browser = await puppeteer.connect({ browserURL: url });
+  if (!browser) throw new Error("Browser initialization failed");
 
-  try {
-    const browser = await puppeteer.connect({
-      browserWSEndpoint: wsUrl,
-    });
-
-    if (!browser) {
-      throw new Error("Browser initialization failed");
-    }
-
-    console.log("Successfully connected to browserless");
-    return browser;
-  } catch (error) {
-    console.error("Failed to connect to browserless:", error);
-    throw new Error(
-      `Browserless connection failed: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
+  console.log("Successfully connected to browserless");
+  return browser;
 }
 
 async function connectWithRetry(
-  maxRetries = 3,
-  delay = 1000,
+  maxRetries = BROWSERLESS_RETRIES,
+  delay = BROWSERLESS_RETRY_DELAY,
 ): Promise<Browser> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const browser = await connectToBrowserless();
-      if (!browser) {
-        throw new Error("Failed to initialize browser");
-      }
       return browser;
     } catch (error) {
       if (i === maxRetries - 1) throw error;
       console.log(`Retry ${i + 1}/${maxRetries} after ${delay}ms`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await sleep(delay);
     }
   }
   throw new Error("Failed to connect after maximum retries");
 }
 
-const generate_image = async () => {
-  console.log(`Generating image - ${new Date().toISOString()}`);
+// Image generation
+async function generateImage(): Promise<void> {
+  console.log(`Starting image generation at ${new Date().toISOString()}`);
 
   let browser: Browser | null = null;
   let page: Page | null = null;
-  let imageBuffer: Buffer | null = null;
 
   try {
     browser = await connectWithRetry();
-    if (!browser) {
-      throw new Error("Failed to initialize browser");
-    }
-
     page = await browser.newPage();
-    if (!page) {
-      throw new Error("Failed to create new page");
-    }
-
     await page.goto("https://nicepfp.art/frame/img", {
-      waitUntil: ["networkidle0"],
+      waitUntil: "networkidle0",
     });
-
-    console.log(`Puppeteer go - ${new Date().toISOString()}`);
-
     await page.waitForSelector("#defaultCanvas0", { timeout: 60000 });
-
     await sleep(5000);
 
     const data = await page.evaluate(() => {
-      let data: string | undefined = "";
       const canvas =
         document.querySelector<HTMLCanvasElement>("#defaultCanvas0");
-      if (canvas !== null) data = canvas.toDataURL();
-      return data;
+      return canvas?.toDataURL();
     });
 
-    imageBuffer = Buffer.from(
+    if (!data) throw new Error("Failed to capture canvas data");
+
+    const imageBuffer = Buffer.from(
       data.replace(/^data:image\/\w+;base64,/, ""),
       "base64",
     );
+    const imageIPFS = await ipfsClient.add(imageBuffer);
+
+    if (imageIPFS.path === DEFAULT_IPFS_HASH) {
+      console.log("Skipping default IPFS hash");
+      return;
+    }
+
+    console.log(`Image uploaded to IPFS: ${imageIPFS.path}`);
+
+    const jsonObj = {
+      name: "nicepfp",
+      description: "A very nice pfp created using nicepfp.art",
+      image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+    };
+
+    const objIPFS = await ipfsClient.add(JSON.stringify(jsonObj));
+    console.log(`Metadata uploaded to IPFS: ${objIPFS.path}`);
+
+    const message = EthCrypto.hash.keccak256([
+      { type: "string", value: objIPFS.path },
+    ]);
+    const signature = EthCrypto.sign(process.env.PRIVATE_KEY!, message);
+
+    await prisma.entries.create({
+      data: {
+        ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+        ipfsNFT: objIPFS.path,
+        signature,
+        locked: false,
+      },
+    });
+
+    console.log(`Entry created in database: ${objIPFS.path}`);
   } catch (error) {
-    console.error("Error fetching contribution data:", error);
+    console.error("Error during image generation:", error);
     throw error;
   } finally {
     if (page) await page.close().catch(console.error);
     if (browser) await browser.close().catch(console.error);
-    console.log(`Puppeteer close - ${new Date().toISOString()}`);
+    console.log(`Browser closed at ${new Date().toISOString()}`);
   }
+}
 
-  if (imageBuffer == null) return;
-
-  const imageIPFS = await ipfsClient.add(imageBuffer);
-
-  if (imageIPFS.path == "QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH") {
-    await browser.close();
-    return;
-  }
-
-  console.log(`IPFS image - ${new Date().toISOString()}`);
-
-  const jsonObj = {
-    name: `nicepfp`,
-    description: `A very nice pfp created using nicepfp.art`,
-    image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
-  };
-
-  const objIPFS = await ipfsClient.add(JSON.stringify(jsonObj));
-
-  console.log(`IPFS obj - ${new Date().toISOString()}`);
-
-  let signature = "";
-  try {
-    const message = EthCrypto.hash.keccak256([
-      { type: "string", value: objIPFS.path },
-    ]);
-    signature = EthCrypto.sign(hexPrivateKey, message);
-  } catch (e) {
-    console.log(e);
-  }
-
-  await prisma.entries.create({
-    data: {
-      ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
-      ipfsNFT: objIPFS.path,
-      signature: signature,
-      locked: false,
-    },
-  });
-
-  console.log(`
-    ipfsImage: https://ipfs.io/ipfs/${imageIPFS.path},
-    ipfsNFT: ${objIPFS.path},
-    signature: ${signature},
-    locked: ${false}
-    `);
-
-  console.log(
-    `Inserted into db ipfsNFT: ${objIPFS.path}(https://ipfs.io/ipfs/${objIPFS.path}) - ${new Date().toISOString()}`,
-  );
-};
-
+// Utility
 const sleep = (ms: number): Promise<void> =>
-  new Promise((res) => setTimeout(res, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));

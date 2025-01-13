@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install system dependencies
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 RUN apk update
 
 # Setup yarn
@@ -29,7 +29,7 @@ RUN yarn workspace @nicepfp/mint build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 
 COPY --from=builder /app/apps/mint/package.json ./
 COPY --from=builder /app/apps/mint/dist ./dist

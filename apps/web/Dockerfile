@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install system dependencies
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 RUN apk update
 
 # Setup yarn
@@ -27,6 +27,10 @@ COPY tsconfig.json ./
 RUN yarn workspace @nicepfp/web build
 
 FROM node:20-alpine AS runner
+
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
+RUN apk update
+
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
