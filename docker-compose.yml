@@ -36,7 +36,7 @@ services:
       - PRIVATE_KEY=${PRIVATE_KEY}
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
-      - BROWSERLESS_URL=http://browserless:3600
+      - BROWSERLESS_URL=http://browserless:3000
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:
       postgres:
@@ -115,18 +115,21 @@ services:
       retries: 5
 
   browserless:
-    image: browserless/chrome:latest
+    image: ghcr.io/browserless/chromium:v2.23.0
     environment:
-      - TOKEN=${BROWSERLESS_TOKEN}
-    ports:
-      - "3600:3000"
+      TOKEN: ${BROWSERLESS_TOKEN}
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - "-f"
+        - "http://127.0.0.1:3000/docs"
+      interval: 2s
+      timeout: 10s
+      retries: 15
     networks:
       - nicepfp-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
 networks:
   nicepfp-network:
