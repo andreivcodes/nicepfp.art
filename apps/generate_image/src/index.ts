@@ -108,13 +108,6 @@ async function connectWithRetry(
 const generate_image = async () => {
   console.log(`Generating image - ${new Date().toISOString()}`);
 
-  const browserlessUrl = process.env.BROWSERLESS_URL;
-  const browserlessToken = process.env.BROWSERLESS_TOKEN;
-
-  if (!browserlessUrl || !browserlessToken) {
-    throw new Error("Browserless URL or token not configured");
-  }
-
   let browser: Browser | null = null;
   let page: Page | null = null;
   let imageBuffer: Buffer | null = null;
