@@ -4,14 +4,17 @@ FROM base AS builder
 RUN apk add --no-cache libc6-compat python3 make g++
 RUN apk update
 WORKDIR /app
-RUN yarn global add turbo
+RUN corepack enable
+RUN corepack prepare yarn@4.1.1 --activate
 COPY . .
-RUN turbo prune @nicepfp/gen-img --docker
+RUN yarn turbo prune @nicepfp/gen-img --docker
 
 FROM base AS installer
 RUN apk add --no-cache libc6-compat python3 make g++
 RUN apk update
 WORKDIR /app
+RUN corepack enable
+RUN corepack prepare yarn@4.1.1 --activate
 
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock

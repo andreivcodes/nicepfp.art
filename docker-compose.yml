@@ -12,10 +12,8 @@ services:
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
     depends_on:
-      redis:
-        condition: service_started
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - nicepfp-network
 
@@ -32,10 +30,8 @@ services:
       - BROWSERLESS_URL=${BROWSERLESS_URL}
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:
-      redis:
-        condition: service_started
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - nicepfp-network
 
@@ -48,8 +44,18 @@ services:
       - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
-      redis:
-        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - nicepfp-network
+
+  migrate:
+    build:
+      context: .
+      dockerfile: prisma/migrate.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
+    depends_on:
       postgres:
         condition: service_healthy
     networks:
