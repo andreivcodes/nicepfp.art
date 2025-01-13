@@ -30,7 +30,9 @@ export const getImage = async () => {
     console.log(`Requested generation of 10 photos.`);
   }
 
-  const randomIdResult = await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM entries ORDER BY RAND() LIMIT 1`;
+  const randomIdResult = await prisma.$queryRaw<
+    { id: string }[]
+  >`SELECT id FROM entries ORDER BY RANDOM() LIMIT 1`;
 
   const randomId = randomIdResult.length > 0 ? randomIdResult[0].id : null;
 
@@ -38,21 +40,28 @@ export const getImage = async () => {
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" };
   }
 
-  const randomEntry = await prisma.entries.findFirst({ where: { id: randomId } });
+  const randomEntry = await prisma.entries.findFirst({
+    where: { id: randomId },
+  });
 
-  if (!randomEntry) return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" };
+  if (!randomEntry)
+    return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" };
 
   return { id: randomEntry.id!, imgSrc: randomEntry.ipfsImage };
 };
 
 export const unlock = async (id: string) => {
   if (!id.length) return;
-  await prisma.entries.update({ where: { id }, data: { locked: false } }).catch(() => {});
+  await prisma.entries
+    .update({ where: { id }, data: { locked: false } })
+    .catch(() => {});
   console.log(`Unlocked ${id}`);
 };
 
 export const lock = async (id: string) => {
   if (!id.length) return;
-  await prisma.entries.update({ where: { id }, data: { locked: true } }).catch(() => {});
+  await prisma.entries
+    .update({ where: { id }, data: { locked: true } })
+    .catch(() => {});
   console.log(`Locked ${id}`);
 };
