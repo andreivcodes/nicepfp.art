@@ -42,7 +42,7 @@ services:
       - PRIVATE_KEY=${PRIVATE_KEY}
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
-      - BROWSERLESS_URL=${BROWSERLESS_URL}
+      - BROWSERLESS_URL=http://browserless:3000
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:
       postgres:
@@ -51,6 +51,8 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      browserless:
+        condition: service_healthy
     networks:
       - nicepfp-network
 
@@ -114,6 +116,20 @@ services:
           "CMD-SHELL",
           "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-nicepfp}",
         ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  browserless:
+    image: browserless/chrome:latest
+    environment:
+      - TOKEN=${BROWSERLESS_TOKEN}
+    ports:
+      - "3000:3000"
+    networks:
+      - nicepfp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/active"]
       interval: 5s
       timeout: 5s
       retries: 5
