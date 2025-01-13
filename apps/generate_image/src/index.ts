@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import { config as dotenv_config } from "dotenv";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser, Page } from "puppeteer";
 import EthCrypto from "eth-crypto";
 import { PrismaClient } from "@prisma/client";
 import { create } from "ipfs-http-client";
@@ -17,7 +17,10 @@ const ipfsClient = create({
   protocol: "https",
   headers: {
     authorization:
-      "Basic " + Buffer.from(process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET).toString("base64"),
+      "Basic " +
+      Buffer.from(
+        process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET,
+      ).toString("base64"),
   },
 });
 
@@ -25,7 +28,9 @@ redis.subscribe("gen-img", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
-    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
+    console.log(
+      `Subscribed successfully! This client is currently subscribed to ${count} channels.`,
+    );
   }
 });
 
@@ -44,37 +49,119 @@ app.listen(3000, () => {
   console.log(`Healthcheck is running at http://localhost:3000`);
 });
 
+async function connectToBrowserless(): Promise<Browser> {
+  const launchArgs = JSON.stringify({
+    args: ["--no-sandbox"],
+    headless: true,
+  });
+
+  const browserlessUrl = process.env.BROWSERLESS_URL;
+  const browserlessToken = process.env.BROWSERLESS_TOKEN;
+
+  if (!browserlessUrl || !browserlessToken) {
+    throw new Error("Browserless URL or token not configured");
+  }
+
+  const wsUrl = `${browserlessUrl}/?token=${browserlessToken}&launch=${launchArgs}`;
+
+  console.log("Connecting to browserless service...");
+
+  try {
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: wsUrl,
+    });
+
+    if (!browser) {
+      throw new Error("Browser initialization failed");
+    }
+
+    console.log("Successfully connected to browserless");
+    return browser;
+  } catch (error) {
+    console.error("Failed to connect to browserless:", error);
+    throw new Error(
+      `Browserless connection failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+async function connectWithRetry(
+  maxRetries = 3,
+  delay = 1000,
+): Promise<Browser> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const browser = await connectToBrowserless();
+      if (!browser) {
+        throw new Error("Failed to initialize browser");
+      }
+      return browser;
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      console.log(`Retry ${i + 1}/${maxRetries} after ${delay}ms`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Failed to connect after maximum retries");
+}
+
 const generate_image = async () => {
   console.log(`Generating image - ${new Date().toISOString()}`);
 
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: `${process.env.BROWSERLESS_WSS}?token=${process.env.BROWSERLESS_TOKEN}`,
-  });
+  const browserlessUrl = process.env.BROWSERLESS_URL;
+  const browserlessToken = process.env.BROWSERLESS_TOKEN;
 
-  console.log(`Puppeteer connect - ${new Date().toISOString()}`);
+  if (!browserlessUrl || !browserlessToken) {
+    throw new Error("Browserless URL or token not configured");
+  }
 
-  const page = await browser.newPage();
+  let browser: Browser | null = null;
+  let page: Page | null = null;
+  let imageBuffer: Buffer | null = null;
 
-  await page.goto("https://nicepfp.art/frame/img", { waitUntil: ["networkidle0"] });
+  try {
+    browser = await connectWithRetry();
+    if (!browser) {
+      throw new Error("Failed to initialize browser");
+    }
 
-  console.log(`Puppeteer go - ${new Date().toISOString()}`);
+    page = await browser.newPage();
+    if (!page) {
+      throw new Error("Failed to create new page");
+    }
 
-  await page.waitForSelector("#defaultCanvas0", { timeout: 60000 });
+    await page.goto("https://nicepfp.art/frame/img", {
+      waitUntil: ["networkidle0"],
+    });
 
-  await sleep(5000);
+    console.log(`Puppeteer go - ${new Date().toISOString()}`);
 
-  const data = await page.evaluate(() => {
-    let data: string | undefined = "";
-    const canvas = document.querySelector<HTMLCanvasElement>("#defaultCanvas0");
-    if (canvas !== null) data = canvas.toDataURL();
-    return data;
-  });
+    await page.waitForSelector("#defaultCanvas0", { timeout: 60000 });
 
-  const imageBuffer = Buffer.from(data.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    await sleep(5000);
 
-  await browser.close();
+    const data = await page.evaluate(() => {
+      let data: string | undefined = "";
+      const canvas =
+        document.querySelector<HTMLCanvasElement>("#defaultCanvas0");
+      if (canvas !== null) data = canvas.toDataURL();
+      return data;
+    });
 
-  console.log(`Puppeteer close - ${new Date().toISOString()}`);
+    imageBuffer = Buffer.from(
+      data.replace(/^data:image\/\w+;base64,/, ""),
+      "base64",
+    );
+  } catch (error) {
+    console.error("Error fetching contribution data:", error);
+    throw error;
+  } finally {
+    if (page) await page.close().catch(console.error);
+    if (browser) await browser.close().catch(console.error);
+    console.log(`Puppeteer close - ${new Date().toISOString()}`);
+  }
+
+  if (imageBuffer == null) return;
 
   const imageIPFS = await ipfsClient.add(imageBuffer);
 
@@ -97,7 +184,9 @@ const generate_image = async () => {
 
   let signature = "";
   try {
-    const message = EthCrypto.hash.keccak256([{ type: "string", value: objIPFS.path }]);
+    const message = EthCrypto.hash.keccak256([
+      { type: "string", value: objIPFS.path },
+    ]);
     signature = EthCrypto.sign(hexPrivateKey, message);
   } catch (e) {
     console.log(e);
@@ -124,4 +213,5 @@ const generate_image = async () => {
   );
 };
 
-const sleep = (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms));
+const sleep = (ms: number): Promise<void> =>
+  new Promise((res) => setTimeout(res, ms));
