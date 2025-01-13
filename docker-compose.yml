@@ -122,6 +122,11 @@ services:
       - "3600:3000"
     networks:
       - nicepfp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   nicepfp-network:
