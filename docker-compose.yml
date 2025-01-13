@@ -22,7 +22,6 @@ services:
         condition: service_completed_successfully
     networks:
       - nicepfp-network
-      - dokploy-network
 
   generate-image:
     build:
@@ -134,8 +133,6 @@ services:
 networks:
   nicepfp-network:
     driver: bridge
-  dokploy-network:
-    external: true
 
 volumes:
   redis-data:
