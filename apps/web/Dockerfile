@@ -1,44 +1,45 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
 
-FROM base AS builder
-RUN apk add --no-cache libc6-compat
-RUN apk update
 WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
-COPY . .
-RUN yarn turbo prune @nicepfp/web --docker
 
-FROM base AS installer
-RUN apk add --no-cache libc6-compat
+# Install system dependencies
+RUN apk add --no-cache libc6-compat python3 make g++
 RUN apk update
-WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
 
-COPY .gitignore .gitignore
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
+# Setup yarn
+RUN corepack enable
+RUN corepack prepare yarn@4 --activate
+
+# Copy workspace files
+COPY package.json .yarnrc.yml turbo.json ./
+COPY apps/web/package.json ./apps/web/
+COPY prisma ./prisma/
+
+# Install dependencies
 RUN yarn install
+RUN yarn prisma generate
 
-COPY --from=builder /app/out/full/ .
-COPY turbo.json turbo.json
-RUN yarn turbo run build --filter=@nicepfp/web...
+# Copy source files
+COPY apps/web ./apps/web
+COPY tsconfig.json ./
 
-FROM base AS runner
+# Build
+RUN yarn workspace @nicepfp/web build
+
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
 
-COPY --from=installer /app/apps/web/next.config.mjs .
-COPY --from=installer /app/apps/web/package.json .
-COPY --from=installer --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=installer --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=installer --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/next.config.mjs .
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/package.json .
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-CMD node apps/web/server.js
+CMD ["node", "apps/web/server.js"]

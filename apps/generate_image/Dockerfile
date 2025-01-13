@@ -1,35 +1,40 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
 
-FROM base AS builder
-RUN apk add --no-cache libc6-compat python3 make g++
-RUN apk update
 WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
-COPY . .
-RUN yarn turbo prune @nicepfp/gen-img --docker
 
-FROM base AS installer
-RUN apk add --no-cache libc6-compat python3 make g++
+# Install system dependencies
+RUN apk add --no-cache libc6-compat python3 make g++ chromium
 RUN apk update
-WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
 
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
+# Setup yarn
+RUN corepack enable
+RUN corepack prepare yarn@4 --activate
+
+# Copy workspace files
+COPY package.json .yarnrc.yml turbo.json ./
+COPY apps/generate_image/package.json ./apps/generate_image/
+
+# Install dependencies
 RUN yarn install
 
-COPY --from=builder /app/out/full/ .
-COPY turbo.json turbo.json
-RUN yarn turbo run build --filter=@nicepfp/gen-img...
+# Copy source files
+COPY apps/generate_image ./apps/generate_image
+COPY tsconfig.json ./
 
-FROM base AS runner
+# Build
+RUN yarn workspace @nicepfp/gen-img build
+
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-COPY --from=installer /app/apps/generate_image/package.json .
-COPY --from=installer /app/apps/generate_image/dist ./dist
+RUN apk add --no-cache libc6-compat chromium
 
-ENV PORT 3000
+COPY --from=builder /app/apps/generate_image/package.json ./
+COPY --from=builder /app/apps/generate_image/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+ENV PORT=3000
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 CMD ["node", "dist/index.js"]

@@ -3,23 +3,24 @@
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc",
     "dev": "nodemon src/index.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.12.1",
+    "@prisma/client": "6.2.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ioredis": "^5.3.2",
     "viem": "^2.9.13"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.12.5",
+    "@types/express": "5.0.0",
+    "@types/node": "22.10.5",
     "nodemon": "^3.1.0",
+    "prisma": "6.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
   }

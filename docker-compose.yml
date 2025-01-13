@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      platforms:
+        - "linux/amd64"
     ports:
       - "3000:3000"
     environment:
@@ -12,6 +14,10 @@ services:
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       migrate:
         condition: service_completed_successfully
     networks:
@@ -21,6 +27,8 @@ services:
     build:
       context: .
       dockerfile: apps/generate_image/Dockerfile
+      platforms:
+        - "linux/amd64"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -30,6 +38,10 @@ services:
       - BROWSERLESS_URL=${BROWSERLESS_URL}
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       migrate:
         condition: service_completed_successfully
     networks:
@@ -39,11 +51,17 @@ services:
     build:
       context: .
       dockerfile: apps/mint/Dockerfile
+      platforms:
+        - "linux/amd64"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       migrate:
         condition: service_completed_successfully
     networks:

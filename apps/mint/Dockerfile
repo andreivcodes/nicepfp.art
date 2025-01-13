@@ -1,35 +1,41 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
 
-FROM base AS builder
-RUN apk add --no-cache libc6-compat
-RUN apk update
 WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
-COPY . .
-RUN yarn turbo prune @nicepfp/mint --docker
 
-FROM base AS installer
-RUN apk add --no-cache libc6-compat
+# Install system dependencies
+RUN apk add --no-cache libc6-compat python3 make g++
 RUN apk update
-WORKDIR /app
-RUN corepack enable
-RUN corepack prepare yarn@4.1.1 --activate
 
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
+# Setup yarn
+RUN corepack enable
+RUN corepack prepare yarn@4 --activate
+
+# Copy workspace files
+COPY package.json .yarnrc.yml turbo.json ./
+COPY apps/mint/package.json ./apps/mint/
+COPY prisma ./prisma/
+
+# Install dependencies
 RUN yarn install
+RUN yarn prisma generate
 
-COPY --from=builder /app/out/full/ .
-COPY turbo.json turbo.json
-RUN yarn turbo run build --filter=@nicepfp/mint...
+# Copy source files
+COPY apps/mint ./apps/mint
+COPY tsconfig.json ./
 
-FROM base AS runner
+# Build
+RUN yarn workspace @nicepfp/mint build
+
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-COPY --from=installer /app/apps/mint/package.json .
-COPY --from=installer /app/apps/mint/dist ./dist
+RUN apk add --no-cache libc6-compat
 
-ENV PORT 3000
+COPY --from=builder /app/apps/mint/package.json ./
+COPY --from=builder /app/apps/mint/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+
+ENV PORT=3000
 
 CMD ["node", "dist/index.js"]
