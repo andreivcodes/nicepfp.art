@@ -18,5 +18,7 @@ COPY prisma ./prisma
 RUN yarn install
 RUN yarn prisma generate
 
+RUN yarn prisma migrate dev --name init --skip-generate
+
 # Run Prisma migrations
 CMD ["yarn", "prisma", "migrate", "deploy"]
