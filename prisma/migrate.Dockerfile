@@ -9,7 +9,7 @@ RUN corepack enable
 RUN corepack prepare yarn@4 --activate
 
 # Copy workspace files
-COPY package.json yarn.lock .yarnrc.yml turbo.json ./
+COPY package.json .yarnrc.yml turbo.json ./
 COPY prisma ./prisma
 
 RUN yarn install
