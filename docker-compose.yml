@@ -6,40 +6,54 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-      - NEXT_PUBLIC_HOST=${NEXT_PUBLIC_HOST}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
+      - REDIS_URL=redis://redis:6379
+      - NEXT_PUBLIC_HOST=${NEXT_PUBLIC_HOST:-http://localhost:3000}
+      - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
+      - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - nicepfp-network
 
   generate-image:
     build:
       context: .
       dockerfile: apps/generate_image/Dockerfile
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
+      - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
       - BROWSERLESS_WSS=${BROWSERLESS_WSS}
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - nicepfp-network
 
   mint:
     build:
       context: .
       dockerfile: apps/mint/Dockerfile
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
+      - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - nicepfp-network
 
   redis:
     image: redis:alpine
@@ -47,17 +61,39 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - nicepfp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: postgres:15-alpine
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_DB=${POSTGRES_DB:-nicepfp}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - nicepfp-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-nicepfp}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  nicepfp-network:
+    driver: bridge
 
 volumes:
   redis-data:
