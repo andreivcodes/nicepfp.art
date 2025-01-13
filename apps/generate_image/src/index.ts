@@ -74,7 +74,7 @@ async function connectToBrowserless(): Promise<Browser> {
 
   try {
     const browser = await puppeteer.connect({
-      browserURL: url,
+      browserWSEndpoint: url,
       defaultViewport: null,
     });
 
