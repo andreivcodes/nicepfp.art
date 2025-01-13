@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export const ShowcaseList = () => {
   const [supply, setSupply] = useState(0);
-  const [columnCount, setColumnCount] = useState(4); // Default column count
 
   const totalSupply = useContractRead({
     address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
@@ -38,14 +37,7 @@ export const ShowcaseList = () => {
         </CardHeader>
 
         <CardContent>
-          <div
-            className="w-full"
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
-              gap: "16px", // Adjust gap as needed
-            }}
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {Array.from({ length: supply }, (_, id) => (
               <div key={id} className="p-2">
                 <ShowcaseItem id={id} />
