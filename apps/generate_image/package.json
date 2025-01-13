@@ -11,7 +11,7 @@
     "express": "^4.19.2",
     "ioredis": "^5.3.2",
     "ipfs-http-client": "^60.0.1",
-    "puppeteer": "24.0.0"
+    "puppeteer": "^22.6.3"
   },
   "devDependencies": {
     "@types/express": "5.0.0",

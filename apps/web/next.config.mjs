@@ -3,6 +3,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["ipfs-utils", "eth-crypto"],
   },
+  transpilePackages: ["cheerio", "undici"],
   images: {
     remotePatterns: [
       {

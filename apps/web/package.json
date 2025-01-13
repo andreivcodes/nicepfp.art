@@ -44,7 +44,7 @@
     "ipfs-http-client": "^60.0.1",
     "lucide-react": "0.471.1",
     "ml5": "^0.12.2",
-    "next": "14.1.4",
+    "next": "^14",
     "next-auth": "^4.24.7",
     "next-themes": "0.4.4",
     "react": "^18",
@@ -53,12 +53,14 @@
     "react-infinite-scroller": "^1.2.6",
     "react-p5": "^1.3.33",
     "react-resizable-panels": "^2.0.16",
+    "react-window": "^1.8.11",
     "sharp": "^0.33.3",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "1.1.2",
-    "viem": "^2.9.13",
+    "use-resize-observer": "^9.1.0",
+    "vaul": "^0.9.0",
+    "viem": "2.20.0",
     "wagmi": "^2.5.19"
   },
   "devDependencies": {
@@ -66,12 +68,16 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-infinite-scroller": "^1.2.5",
+    "@types/react-window": "^1",
     "autoprefixer": "^10.4.19",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.4"
+  },
+  "overrides": {
+    "undici": "5.28.4"
   },
   "private": true,
   "scripts": {
