@@ -38,3 +38,4 @@ next-env.d.ts
 # build output
 dist/
 .DS_Store
+apps/.DS_Store
