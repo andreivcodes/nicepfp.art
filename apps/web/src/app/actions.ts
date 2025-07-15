@@ -37,7 +37,9 @@ export const getIpfs = async (imageBase64: string) => {
 
   try {
     const message = EthCrypto.hash.keccak256([{ type: "string", value: response.path }]);
-    response.signature = EthCrypto.sign(hexPrivateKey, message);
+    // Remove 0x prefix if present for eth-crypto
+    const privateKeyForSigning = hexPrivateKey.startsWith('0x') ? hexPrivateKey.slice(2) : hexPrivateKey;
+    response.signature = EthCrypto.sign(privateKeyForSigning, message);
   } catch (e) {
     console.log(e);
   }

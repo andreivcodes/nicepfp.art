@@ -154,7 +154,10 @@ async function generateImage(): Promise<void> {
     const message = EthCrypto.hash.keccak256([
       { type: "string", value: objIPFS.path },
     ]);
-    const signature = EthCrypto.sign(process.env.PRIVATE_KEY!, message);
+    // Remove 0x prefix if present for eth-crypto
+    const privateKey = process.env.PRIVATE_KEY!;
+    const privateKeyForSigning = privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey;
+    const signature = EthCrypto.sign(privateKeyForSigning, message);
 
     await prisma.entries.create({
       data: {
