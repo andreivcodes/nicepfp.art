@@ -72,24 +72,60 @@ Two main models in Prisma:
 Each app has its own `.env` file. Key variables include:
 - Database URLs
 - Redis connection strings
-- IPFS API credentials
-- Ethereum private keys for signing
+- IPFS API credentials (Infura project ID and secret)
+- Ethereum private keys for signing (IMPORTANT: Include 0x prefix, code handles both formats)
 - Browserless WebSocket endpoints
+
+**Critical Environment Variables:**
+```bash
+# Web App
+PRIVATE_KEY=0x...  # Required for signing IPFS metadata
+IPFS_PROJECT_ID=...
+IPFS_PROJECT_SECRET=...
+
+# Generate Image Service  
+PRIVATE_KEY=0x...  # Required for signing
+BROWSERLESS_URL=...
+BROWSERLESS_TOKEN=...
+
+# Mint Service
+PRIVATE_KEY=0x...  # Required for blockchain transactions
+```
 
 ## Important Implementation Details
 
 ### Image Generation Flow
-1. User creates art on p5.js canvas in web app
-2. Canvas data sent to generate_image service
-3. Puppeteer renders the canvas and captures screenshot
-4. Image uploaded to IPFS
-5. Metadata signed and stored in database
+
+**Direct Web Minting:**
+1. User generates AI face doodle using ML5.js/SketchRNN on p5.js canvas
+2. Canvas captured as base64 image
+3. Server action (`app/actions.ts`) uploads to IPFS
+4. NFT metadata created and signed with private key
+5. Frontend calls smart contract directly to mint
+
+**Background Generation (for Farcaster Frames):**
+1. Generate service uses Puppeteer with Browserless Chrome
+2. Navigates to `https://nicepfp.art/frame/img`
+3. Captures rendered AI-generated face
+4. Uploads to IPFS with signed metadata
+5. Stores in database as unlocked entry
 
 ### NFT Minting Flow
-1. User connects wallet via RainbowKit
-2. Mint request sent to mint service
-3. Service interacts with smart contract
-4. Transaction hash returned to frontend
+
+**Web App Direct Minting:**
+1. User connects wallet via Wagmi/Web3 button
+2. Generates and captures desired face
+3. Clicks mint button
+4. Server action handles IPFS upload and signing
+5. Frontend executes smart contract mint function
+
+**Farcaster Frame Minting:**
+1. User views frame with pre-generated image
+2. Must recast to unlock minting
+3. Mint request published to Redis channel
+4. Mint service processes request asynchronously
+5. Validates one-mint-per-address limit
+6. Executes blockchain transaction
 
 ### Farcaster Frames
 The app implements Farcaster Frames protocol for social media integration. Frame routes are in `apps/web/app/api/frames/`.
@@ -121,3 +157,33 @@ docker-compose up -d postgres redis browserless
 ```
 
 Then run the specific service you're working on.
+
+## Known Issues and Solutions
+
+### Private Key Format Error
+If you encounter "Expected private key to be an Uint8Array with length 32":
+- The code expects private keys with 0x prefix (e.g., `0x1234...`)
+- eth-crypto library requires removing the 0x prefix internally
+- The code handles this automatically in `actions.ts` and `generate_image/index.ts`
+- Ensure PRIVATE_KEY env var is set in docker-compose.yml for ALL services that need it
+
+### Docker Compose Configuration
+The web service MUST have the PRIVATE_KEY environment variable:
+```yaml
+web:
+  environment:
+    - PRIVATE_KEY=${PRIVATE_KEY}  # Critical for minting functionality
+```
+
+### Smart Contract Details
+- **Network**: Polygon Mainnet
+- **Contract Address**: `0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34`
+- **Features**: Signature verification, ERC-721 standard
+- **Limits**: One mint per address for Farcaster integration
+
+### Service Communication
+- **Redis Channels**:
+  - `gen-img`: Triggers image generation
+  - `mint`: Triggers NFT minting
+- **Database**: Shared PostgreSQL instance
+- **IPFS**: Uses Infura gateway (requires project credentials)
