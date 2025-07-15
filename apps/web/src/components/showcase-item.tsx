@@ -14,14 +14,16 @@ export const ShowcaseItem = (props: { id: number }) => {
     chainId: 137,
   });
 
-  const [image, setImage] = useState("https://ipfs.proposals.app/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7");
+  const [image, setImage] = useState(
+    "https://ipfs.io/ipfs/QmXvGx7cxULKeFZmkRQXkPtb3HLxs1cyAg61zAMpbt3Zi7",
+  );
 
   useEffect(() => {
     if (getTokenUri.data) {
-      fetch(`https://ipfs.proposals.app/ipfs/${(getTokenUri.data as string).slice(21)}`)
+      fetch(`https://ipfs.io/ipfs/${(getTokenUri.data as string).slice(21)}`)
         .then((response) => response.json())
         .then((data) => {
-          setImage(`https://ipfs.proposals.app/ipfs/${(data.image as string).slice(21)}`);
+          setImage(`https://ipfs.io/ipfs/${(data.image as string).slice(21)}`);
         })
         .catch((e) => console.log(e));
     }
