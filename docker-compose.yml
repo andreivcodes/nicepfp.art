@@ -13,6 +13,7 @@ services:
       - NEXT_PUBLIC_HOST=${NEXT_PUBLIC_HOST:-http://localhost:3000}
       - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
       - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
+      - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
       postgres:
         condition: service_healthy
