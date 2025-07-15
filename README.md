@@ -28,7 +28,7 @@ nicepfp.art is a Web3 application that uses machine learning to generate unique 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/nicepfp.art.git
+git clone https://github.com/andreivcodes/nicepfp.art.git
 cd nicepfp.art
 ```
 
