@@ -8,7 +8,7 @@ RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 # Update and enable corepack
 RUN apk update
 RUN corepack enable
-RUN corepack prepare yarn@4 --activate
+RUN corepack prepare yarn@4.6.0 --activate
 
 # Copy workspace files
 COPY package.json .yarnrc.yml turbo.json ./

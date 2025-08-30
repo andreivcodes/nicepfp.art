@@ -8,7 +8,7 @@ RUN apk update
 
 # Setup yarn
 RUN corepack enable
-RUN corepack prepare yarn@4 --activate
+RUN corepack prepare yarn@4.6.0 --activate
 
 # Copy workspace files
 COPY package.json .yarnrc.yml turbo.json ./
