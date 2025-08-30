@@ -10,24 +10,24 @@ nicepfp.art is a Web3-enabled monorepo for creating and minting custom profile p
 
 ```bash
 # Development
-yarn dev                          # Run all apps in development mode
-yarn dev --filter=@nicepfp/web    # Run only the web app
-yarn dev --filter=@nicepfp/generate_image  # Run only generate_image service
-yarn dev --filter=@nicepfp/mint   # Run only mint service
+pnpm dev                          # Run all apps in development mode
+pnpm dev --filter=@nicepfp/web    # Run only the web app
+pnpm dev --filter=@nicepfp/generate_image  # Run only generate_image service
+pnpm dev --filter=@nicepfp/mint   # Run only mint service
 
 # Building
-yarn build                        # Build all apps
-yarn build --filter=@nicepfp/web  # Build specific app
+pnpm build                        # Build all apps
+pnpm build --filter=@nicepfp/web  # Build specific app
 
 # Database Operations
-yarn prisma:generate              # Generate Prisma client after schema changes
-yarn prisma:migrate:dev          # Create and apply migrations in development
-yarn prisma:migrate:deploy       # Deploy migrations to production
-yarn prisma:studio               # Open Prisma Studio GUI
+pnpm prisma:generate              # Generate Prisma client after schema changes
+pnpm prisma:migrate:dev          # Create and apply migrations in development
+pnpm prisma:migrate:deploy       # Deploy migrations to production
+pnpm prisma:studio               # Open Prisma Studio GUI
 
 # Code Quality
-yarn lint                        # Run ESLint across all apps
-yarn format                      # Format code with Prettier
+pnpm lint                        # Run ESLint across all apps
+pnpm format                      # Format code with Prettier
 
 # Docker Stack
 docker-compose up                # Start PostgreSQL, Redis, and Browserless services
@@ -142,7 +142,7 @@ export async function POST(request: Request) { }
 ### Prisma Usage
 Always regenerate Prisma client after schema changes:
 ```bash
-yarn prisma:generate
+pnpm prisma:generate
 ```
 
 ### Component Structure

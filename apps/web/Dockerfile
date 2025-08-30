@@ -6,25 +6,27 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 RUN apk update
 
-# Setup yarn
+# Setup pnpm
 RUN corepack enable
-RUN corepack prepare yarn@4.6.0 --activate
+RUN corepack prepare pnpm@10.15.0 --activate
 
 # Copy workspace files
-COPY package.json .yarnrc.yml turbo.json ./
+COPY package.json .pnpmrc pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/generate_image/package.json ./apps/generate_image/
+COPY apps/mint/package.json ./apps/mint/
 COPY prisma ./prisma/
 
 # Install dependencies
-RUN yarn install
-RUN yarn prisma generate
+RUN pnpm install
+RUN pnpm prisma:generate
 
 # Copy source files
 COPY apps/web ./apps/web
 COPY tsconfig.json ./
 
 # Build
-RUN yarn workspace @nicepfp/web build
+RUN pnpm build --filter=@nicepfp/web
 
 FROM node:20-alpine AS runner
 
