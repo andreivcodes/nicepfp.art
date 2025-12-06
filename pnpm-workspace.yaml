@@ -1,2 +1,11 @@
 packages:
-  - 'apps/*'
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - esbuild
+  - keccak
+  - puppeteer
+  - react-p5
+  - secp256k1
+  - sharp

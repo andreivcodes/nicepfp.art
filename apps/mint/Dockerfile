@@ -11,15 +11,17 @@ RUN corepack enable
 RUN corepack prepare pnpm@10.15.0 --activate
 
 # Copy workspace files
-COPY package.json .pnpmrc pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/mint/package.json ./apps/mint/
 COPY apps/web/package.json ./apps/web/
 COPY apps/generate_image/package.json ./apps/generate_image/
-COPY prisma ./prisma/
+COPY packages/database ./packages/database/
 
 # Install dependencies
 RUN pnpm install
-RUN pnpm prisma:generate
+
+# Build the database package first
+RUN pnpm --filter @nicepfp/database build
 
 # Copy source files
 COPY apps/mint ./apps/mint
@@ -33,10 +35,28 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 
-COPY --from=builder /app/apps/mint/package.json ./
-COPY --from=builder /app/apps/mint/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/prisma ./prisma
+# Setup pnpm for production install
+RUN corepack enable
+RUN corepack prepare pnpm@10.15.0 --activate
+
+# Copy workspace files needed for pnpm install
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/apps/mint/package.json ./apps/mint/
+COPY --from=builder /app/apps/web/package.json ./apps/web/
+COPY --from=builder /app/apps/generate_image/package.json ./apps/generate_image/
+COPY --from=builder /app/packages/database/package.json ./packages/database/
+COPY --from=builder /app/packages/database/dist ./packages/database/dist
+
+# Install production dependencies only (ignore-scripts to skip husky)
+# Include database package to get kysely and pg dependencies
+RUN pnpm install --prod --ignore-scripts --filter @nicepfp/mint --filter @nicepfp/database
+
+# Copy built application
+COPY --from=builder /app/apps/mint/dist ./apps/mint/dist
+
+WORKDIR /app/apps/mint
 
 ENV PORT=3000
 

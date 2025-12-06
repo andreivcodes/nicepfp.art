@@ -19,11 +19,10 @@ pnpm dev --filter=@nicepfp/mint   # Run only mint service
 pnpm build                        # Build all apps
 pnpm build --filter=@nicepfp/web  # Build specific app
 
-# Database Operations
-pnpm prisma:generate              # Generate Prisma client after schema changes
-pnpm prisma:migrate:dev          # Create and apply migrations in development
-pnpm prisma:migrate:deploy       # Deploy migrations to production
-pnpm prisma:studio               # Open Prisma Studio GUI
+# Database Operations (Kysely)
+pnpm db:migrate:latest           # Run all pending migrations
+pnpm db:migrate:down             # Roll back migrations
+pnpm db:migrate:make <name>      # Create a new migration file
 
 # Code Quality
 pnpm lint                        # Run ESLint across all apps
@@ -53,19 +52,24 @@ docker-compose up                # Start PostgreSQL, Redis, and Browserless serv
    - NFT minting operations
    - Blockchain interaction via Viem
 
+4. **Database Package** (`/packages/database/`): Shared Kysely database layer
+   - Type-safe SQL query builder
+   - Database types and connection singleton
+   - Migration files
+
 ### Key Technologies
 
 - **Frontend**: Next.js, React 18, TypeScript, Tailwind CSS, shadcn/ui
-- **Backend**: Express.js, TypeScript, Prisma ORM
+- **Backend**: Express.js, TypeScript, Kysely (SQL query builder)
 - **Blockchain**: Viem, Wagmi, Ethers, RainbowKit
 - **Creative**: p5.js (react-p5), ml5.js
 - **Infrastructure**: PostgreSQL, Redis, IPFS, Browserless Chrome
 
 ### Database Schema
 
-Two main models in Prisma:
-- `Entry`: Stores generated profile pictures with metadata
-- `Minter`: Tracks users who mint NFTs
+Two main tables defined in `packages/database/src/types.ts`:
+- `entries`: Stores generated profile pictures (id, ipfsImage, ipfsNFT, signature, locked, minted, minter_address)
+- `minters`: Tracks users who mint NFTs (id, address)
 
 ### Environment Variables
 
@@ -83,7 +87,7 @@ PRIVATE_KEY=0x...  # Required for signing IPFS metadata
 IPFS_PROJECT_ID=...
 IPFS_PROJECT_SECRET=...
 
-# Generate Image Service  
+# Generate Image Service
 PRIVATE_KEY=0x...  # Required for signing
 BROWSERLESS_URL=...
 BROWSERLESS_TOKEN=...
@@ -139,10 +143,44 @@ export async function GET(request: Request) { }
 export async function POST(request: Request) { }
 ```
 
-### Prisma Usage
-Always regenerate Prisma client after schema changes:
-```bash
-pnpm prisma:generate
+### Database Usage (Kysely)
+
+The project uses Kysely as the type-safe SQL query builder. The shared database package is at `/packages/database/`.
+
+```typescript
+import { db, sql } from "@nicepfp/database";
+
+// Find one
+const entry = await db
+  .selectFrom("entries")
+  .selectAll()
+  .where("id", "=", id)
+  .executeTakeFirst();
+
+// Find many
+const entries = await db
+  .selectFrom("entries")
+  .selectAll()
+  .where("locked", "=", false)
+  .execute();
+
+// Insert
+await db
+  .insertInto("entries")
+  .values({ ipfsImage, ipfsNFT, signature, locked: false })
+  .execute();
+
+// Update
+await db
+  .updateTable("entries")
+  .set({ locked: true })
+  .where("id", "=", id)
+  .execute();
+
+// Raw SQL
+const result = await sql<{ id: string }>`
+  SELECT id FROM entries ORDER BY RANDOM() LIMIT 1
+`.execute(db);
 ```
 
 ### Component Structure

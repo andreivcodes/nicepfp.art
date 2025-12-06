@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import { config as dotenv_config } from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@nicepfp/database";
 import { createWalletClient, http } from "viem";
 import { polygon } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -12,7 +12,6 @@ dotenv_config();
 const CONTRACT_ADDRESS = "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34";
 
 // Initialize services
-const prisma = new PrismaClient();
 const redis = new Redis(process.env.REDIS_URL!);
 
 // Healthcheck server
@@ -46,13 +45,23 @@ redis.on("message", async (_channel, message) => {
 async function mintNFT(address: string, entryId: string): Promise<void> {
   console.log(`Processing mint request for ${address} with entry ${entryId}`);
 
-  const minter = await prisma.minters.findFirst({ where: { address } });
+  const minter = await db
+    .selectFrom("minters")
+    .selectAll()
+    .where("address", "=", address)
+    .executeTakeFirst();
+
   if (minter) {
     console.log(`Double mint attempt for ${address}`);
     return;
   }
 
-  const entry = await prisma.entries.findFirst({ where: { id: entryId } });
+  const entry = await db
+    .selectFrom("entries")
+    .selectAll()
+    .where("id", "=", entryId)
+    .executeTakeFirst();
+
   if (!entry) {
     console.error(`Entry ${entryId} not found`);
     return;
@@ -75,11 +84,13 @@ async function mintNFT(address: string, entryId: string): Promise<void> {
     args: [address, entry.ipfsNFT, entry.signature],
   });
 
-  await prisma.minters.create({ data: { address } });
-  await prisma.entries.update({
-    where: { id: entry.id },
-    data: { minted: true, minter_address: address },
-  });
+  await db.insertInto("minters").values({ address }).execute();
+
+  await db
+    .updateTable("entries")
+    .set({ minted: true, minter_address: address })
+    .where("id", "=", entry.id)
+    .execute();
 
   console.log(`Minted NFT for ${address}`);
 }

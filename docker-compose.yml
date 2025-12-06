@@ -6,7 +6,7 @@ services:
       platforms:
         - "linux/amd64"
     ports:
-      - "3000"
+      - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -76,7 +76,7 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: prisma/migrate.Dockerfile
+      dockerfile: packages/database/migrate.Dockerfile
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
     depends_on:

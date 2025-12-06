@@ -2,7 +2,7 @@ import Redis from "ioredis";
 import { config as dotenv_config } from "dotenv";
 import puppeteer, { Browser, Page } from "puppeteer";
 import EthCrypto from "eth-crypto";
-import { PrismaClient } from "@prisma/client";
+import { db } from "@nicepfp/database";
 import { create } from "ipfs-http-client";
 import express from "express";
 
@@ -14,7 +14,6 @@ const BROWSERLESS_RETRIES = 3;
 const BROWSERLESS_RETRY_DELAY = 1000;
 
 // Initialize services
-const prisma = new PrismaClient();
 const redis = new Redis(process.env.REDIS_URL!);
 const ipfsClient = create({
   host: "ipfs.infura.io",
@@ -159,14 +158,15 @@ async function generateImage(): Promise<void> {
     const privateKeyForSigning = privateKey.startsWith('0x') ? privateKey.slice(2) : privateKey;
     const signature = EthCrypto.sign(privateKeyForSigning, message);
 
-    await prisma.entries.create({
-      data: {
+    await db
+      .insertInto("entries")
+      .values({
         ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
         ipfsNFT: objIPFS.path,
         signature,
         locked: false,
-      },
-    });
+      })
+      .execute();
 
     console.log(`Entry created in database: ${objIPFS.path}`);
   } catch (error) {

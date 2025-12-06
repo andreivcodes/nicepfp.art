@@ -1,6 +1,7 @@
 "use server";
 
-import { prisma, redis } from "@/lib/db";
+import { db, redis } from "@/lib/db";
+import { sql } from "@nicepfp/database";
 
 export const mint = async (address: string, id: string) => {
   console.log(`Add ${id} to mint queue for ${address}`);
@@ -14,12 +15,20 @@ export const mint = async (address: string, id: string) => {
 };
 
 export const hasMinted = async (address: string) => {
-  const minter = await prisma.minters.findFirst({ where: { address } });
+  const minter = await db
+    .selectFrom("minters")
+    .selectAll()
+    .where("address", "=", address)
+    .executeTakeFirst();
   return minter ? true : false;
 };
 
 export const getImage = async () => {
-  const entries = await prisma.entries.findMany({ where: { locked: false } });
+  const entries = await db
+    .selectFrom("entries")
+    .selectAll()
+    .where("locked", "=", false)
+    .execute();
 
   console.log(`Got ${entries.length} photos prepared.`);
 
@@ -30,19 +39,22 @@ export const getImage = async () => {
     console.log(`Requested generation of 10 photos.`);
   }
 
-  const randomIdResult = await prisma.$queryRaw<
-    { id: string }[]
-  >`SELECT id FROM entries ORDER BY RANDOM() LIMIT 1`;
+  const randomIdResult = await sql<{ id: string }>`
+    SELECT id FROM entries ORDER BY RANDOM() LIMIT 1
+  `.execute(db);
 
-  const randomId = randomIdResult.length > 0 ? randomIdResult[0].id : null;
+  const randomId =
+    randomIdResult.rows.length > 0 ? randomIdResult.rows[0].id : null;
 
   if (!randomId) {
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" };
   }
 
-  const randomEntry = await prisma.entries.findFirst({
-    where: { id: randomId },
-  });
+  const randomEntry = await db
+    .selectFrom("entries")
+    .selectAll()
+    .where("id", "=", randomId)
+    .executeTakeFirst();
 
   if (!randomEntry)
     return { id: "none", imgSrc: "https://nicepfp.art/assets/welcome.png" };
@@ -52,16 +64,28 @@ export const getImage = async () => {
 
 export const unlock = async (id: string) => {
   if (!id.length) return;
-  await prisma.entries
-    .update({ where: { id }, data: { locked: false } })
-    .catch(() => {});
-  console.log(`Unlocked ${id}`);
+  try {
+    await db
+      .updateTable("entries")
+      .set({ locked: false })
+      .where("id", "=", id)
+      .execute();
+    console.log(`Unlocked ${id}`);
+  } catch {
+    // Silently ignore errors (matching original behavior)
+  }
 };
 
 export const lock = async (id: string) => {
   if (!id.length) return;
-  await prisma.entries
-    .update({ where: { id }, data: { locked: true } })
-    .catch(() => {});
-  console.log(`Locked ${id}`);
+  try {
+    await db
+      .updateTable("entries")
+      .set({ locked: true })
+      .where("id", "=", id)
+      .execute();
+    console.log(`Locked ${id}`);
+  } catch {
+    // Silently ignore errors (matching original behavior)
+  }
 };

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
-    "@prisma/client": "6.2.1",
+    "@nicepfp/database": "workspace:*",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",

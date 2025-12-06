@@ -1,0 +1,28 @@
+{
+  "name": "@nicepfp/database",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "migrate:latest": "kysely migrate:latest",
+    "migrate:down": "kysely migrate:down --all",
+    "migrate:make": "kysely migrate:make"
+  },
+  "dependencies": {
+    "kysely": "^0.27.4",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "kysely-ctl": "^0.9.0",
+    "typescript": "^5.0.0"
+  }
+}

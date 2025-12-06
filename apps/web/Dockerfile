@@ -11,15 +11,17 @@ RUN corepack enable
 RUN corepack prepare pnpm@10.15.0 --activate
 
 # Copy workspace files
-COPY package.json .pnpmrc pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/generate_image/package.json ./apps/generate_image/
 COPY apps/mint/package.json ./apps/mint/
-COPY prisma ./prisma/
+COPY packages/database ./packages/database/
 
 # Install dependencies
 RUN pnpm install
-RUN pnpm prisma:generate
+
+# Build the database package first
+RUN pnpm --filter @nicepfp/database build
 
 # Copy source files
 COPY apps/web ./apps/web
