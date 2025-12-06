@@ -2,6 +2,9 @@ packages:
   - apps/*
   - packages/*
 
+# Required for pnpm deploy to work with workspace dependencies
+injectWorkspacePackages: true
+
 onlyBuiltDependencies:
   - esbuild
   - keccak

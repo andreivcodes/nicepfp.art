@@ -22,35 +22,23 @@ RUN pnpm --filter @nicepfp/database build
 COPY apps/mint ./apps/mint
 COPY tsconfig.json ./
 
-# Build
+# Build the app
 RUN pnpm build --filter=@nicepfp/mint
+
+# Deploy creates a standalone bundle with no symlinks
+RUN pnpm deploy --filter=@nicepfp/mint --prod /app/deploy
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Only runtime dependencies needed
-RUN apk add --no-cache libc6-compat && \
-    corepack enable && \
-    corepack prepare pnpm@10.15.0 --activate
+RUN apk add --no-cache libc6-compat
 
-# Copy workspace files needed for pnpm install
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/mint/package.json ./apps/mint/
-COPY apps/web/package.json ./apps/web/
-COPY apps/generate_image/package.json ./apps/generate_image/
-COPY packages/database/package.json ./packages/database/
-
-# Install production dependencies only (ignore-scripts to skip husky)
-# Include database package to get kysely and pg dependencies
-RUN pnpm install --prod --ignore-scripts --filter @nicepfp/mint --filter @nicepfp/database
-
-# Copy the database dist folder AFTER pnpm install (symlinks are now set up)
-COPY --from=builder /app/packages/database/dist ./packages/database/dist
+# Copy the deployed bundle (self-contained, no symlinks)
+COPY --from=builder /app/deploy ./
 
 # Copy built application
-COPY --from=builder /app/apps/mint/dist ./apps/mint/dist
-
-WORKDIR /app/apps/mint
+COPY --from=builder /app/apps/mint/dist ./dist
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
