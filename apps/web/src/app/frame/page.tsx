@@ -3,7 +3,6 @@ import {
   FrameContainer,
   FrameImage,
   FrameReducer,
-  NextServerPageProps,
   getFrameMessage,
   getPreviousFrame,
   useFramesReducer,
@@ -21,8 +20,13 @@ type State = {
 
 const initialState: State = { id: "null", src: "null" };
 
-export default async function Home({ searchParams }: NextServerPageProps) {
-  const previousFrame = getPreviousFrame<State>(searchParams);
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function Home({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const previousFrame = getPreviousFrame<State>(resolvedSearchParams);
   const frameMessage = await getFrameMessage(previousFrame.postBody);
 
   const { id, imgSrc } = await getImage();
@@ -42,6 +46,7 @@ export default async function Home({ searchParams }: NextServerPageProps) {
     }
   };
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- useFramesReducer is a server-side function from frames.js, not a React hook
   const [state] = useFramesReducer<State>(reducer, initialState, previousFrame);
 
   if (previousFrame.prevState == null) {

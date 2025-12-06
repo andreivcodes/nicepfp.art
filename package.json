@@ -16,12 +16,12 @@
     "db:migrate:make": "pnpm --filter @nicepfp/database migrate:make"
   },
   "devDependencies": {
-    "husky": "^8.0.0",
-    "prettier": "^3.2.5",
-    "turbo": "^1.12.5",
-    "typescript": "^5.0.0"
+    "husky": "^9.1.7",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
+    "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.24.0",
   "engines": {
     "node": ">=20.0.0"
   }

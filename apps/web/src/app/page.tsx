@@ -1,3 +1,5 @@
+"use client";
+
 import { Footer } from "@/components/footer";
 import { InfoCards } from "@/components/info-cards";
 import { Web3Provider } from "@/components/provider";

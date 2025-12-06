@@ -6,19 +6,19 @@
   "main": "dist/index.js",
   "dependencies": {
     "@nicepfp/database": "workspace:*",
-    "dotenv": "^16.4.5",
-    "eth-crypto": "^2.6.0",
-    "express": "^4.19.2",
-    "ioredis": "^5.3.2",
+    "dotenv": "^17.2.3",
+    "eth-crypto": "^3.1.0",
+    "express": "^5.2.1",
+    "ioredis": "^5.8.2",
     "ipfs-http-client": "^60.0.1",
-    "puppeteer": "^22.6.3"
+    "puppeteer": "^24.32.0"
   },
   "devDependencies": {
-    "@types/express": "5.0.0",
-    "@types/node": "22.10.5",
-    "nodemon": "^3.1.0",
+    "@types/express": "5.0.6",
+    "@types/node": "24.10.1",
+    "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.4"
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "build": "npx tsc",

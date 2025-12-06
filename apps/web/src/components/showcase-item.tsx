@@ -1,12 +1,14 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { useContractRead } from "wagmi";
+import { useReadContract } from "wagmi";
 import contractJson from "../abi/nicepfp.json";
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 
 const ignoreList = [302];
 export const ShowcaseItem = (props: { id: number }) => {
-  const getTokenUri = useContractRead({
+  const getTokenUri = useReadContract({
     address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
     abi: contractJson.abi,
     functionName: "tokenURI",
