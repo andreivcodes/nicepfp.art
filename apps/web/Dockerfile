@@ -2,23 +2,18 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
-RUN apk update
-
-# Setup pnpm
-RUN corepack enable
-RUN corepack prepare pnpm@10.15.0 --activate
+# Install system dependencies and setup pnpm
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev && \
+    corepack enable && \
+    corepack prepare pnpm@10.15.0 --activate
 
 # Copy workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json ./apps/web/
-COPY apps/generate_image/package.json ./apps/generate_image/
-COPY apps/mint/package.json ./apps/mint/
 COPY packages/database ./packages/database/
 
-# Install dependencies
-RUN pnpm install
+# Install dependencies (only web and its dependencies)
+RUN pnpm install --filter @nicepfp/web...
 
 # Build the database package first
 RUN pnpm --filter @nicepfp/database build
@@ -32,8 +27,8 @@ RUN pnpm build --filter=@nicepfp/web
 
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
-RUN apk update
+# Only runtime dependencies needed
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 

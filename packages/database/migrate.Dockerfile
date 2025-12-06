@@ -2,24 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install necessary dependencies
-RUN apk add --no-cache libc6-compat python3 make g++
-
-# Update and enable corepack
-RUN apk update
-RUN corepack enable
-RUN corepack prepare pnpm@10.15.0 --activate
+# Install dependencies and setup pnpm
+RUN apk add --no-cache libc6-compat python3 make g++ && \
+    corepack enable && \
+    corepack prepare pnpm@10.15.0 --activate
 
 # Copy workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/database ./packages/database
 
-# Install dependencies
-RUN pnpm install --filter @nicepfp/database
+# Install all dependencies (including devDependencies for typescript)
+RUN pnpm install --filter @nicepfp/database...
 
-# Build the database package
-RUN pnpm --filter @nicepfp/database build
-
-# Run migrations
+# Run migrations (kysely-ctl uses jiti to run TypeScript files directly)
 WORKDIR /app/packages/database
 CMD ["pnpm", "migrate:latest"]

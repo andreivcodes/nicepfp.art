@@ -314,6 +314,9 @@ importers:
       kysely:
         specifier: ^0.28.8
         version: 0.28.8
+      kysely-ctl:
+        specifier: ^0.19.0
+        version: 0.19.0(kysely@0.28.8)(typescript@5.9.3)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -321,9 +324,6 @@ importers:
       '@types/pg':
         specifier: ^8.15.6
         version: 8.15.6
-      kysely-ctl:
-        specifier: ^0.19.0
-        version: 0.19.0(kysely@0.28.8)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
