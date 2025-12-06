@@ -10,13 +10,11 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install",
     "db:migrate:latest": "pnpm --filter @nicepfp/database migrate:latest",
     "db:migrate:down": "pnpm --filter @nicepfp/database migrate:down",
     "db:migrate:make": "pnpm --filter @nicepfp/database migrate:make"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
     "prettier": "^3.7.4",
     "turbo": "^2.6.3",
     "typescript": "^5.9.3"
