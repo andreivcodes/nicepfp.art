@@ -5,9 +5,10 @@ export async function up(db: Kysely<any>): Promise<void> {
   // Create uuid-ossp extension for uuid_generate_v4()
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`.execute(db);
 
-  // Create entries table
+  // Create entries table (if not exists for idempotency)
   await db.schema
     .createTable("entries")
+    .ifNotExists()
     .addColumn("id", "text", (col) =>
       col.primaryKey().defaultTo(sql`uuid_generate_v4()::text`)
     )
@@ -19,9 +20,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("minter_address", "text")
     .execute();
 
-  // Create minters table
+  // Create minters table (if not exists for idempotency)
   await db.schema
     .createTable("minters")
+    .ifNotExists()
     .addColumn("id", "text", (col) =>
       col.primaryKey().defaultTo(sql`uuid_generate_v4()::text`)
     )
