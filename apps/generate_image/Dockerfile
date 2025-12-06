@@ -38,8 +38,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/generate_image/package.json ./apps/generate_image/
 COPY apps/web/package.json ./apps/web/
 COPY apps/mint/package.json ./apps/mint/
-COPY packages/database/package.json ./packages/database/
-COPY --from=builder /app/packages/database/dist ./packages/database/dist
+
+# Copy the full database package (package.json + built dist) from builder
+COPY --from=builder /app/packages/database ./packages/database/
 
 # Install production dependencies only (ignore-scripts to skip husky)
 # Include database package to get kysely and pg dependencies
