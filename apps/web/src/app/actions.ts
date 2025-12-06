@@ -1,18 +1,13 @@
 "use server";
 
 import EthCrypto from "eth-crypto";
-import { create } from "ipfs-http-client";
+import { PinataSDK } from "pinata";
 
 const hexPrivateKey = process.env.PRIVATE_KEY ?? "";
 
-const ipfsClient = create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    authorization:
-      "Basic " + Buffer.from(process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET).toString("base64"),
-  },
+const pinata = new PinataSDK({
+  pinataJwt: process.env.PINATA_API_JWT!,
+  pinataGateway: "gateway.pinata.cloud",
 });
 
 export const getIpfs = async (imageBase64: string) => {
@@ -23,17 +18,21 @@ export const getIpfs = async (imageBase64: string) => {
 
   const imageBuffer = Buffer.from(imageBase64.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
-  const imageIPFS = await ipfsClient.add(imageBuffer);
+  // Upload image to Pinata (public IPFS network)
+  const imageBlob = new Blob([imageBuffer], { type: "image/png" });
+  const imageFile = new File([imageBlob], "image.png", { type: "image/png" });
+  const imageUpload = await pinata.upload.public.file(imageFile);
 
   const jsonObj = {
     name: `nicepfp`,
     description: `A very nice pfp created using nicepfp.art`,
-    image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+    image: `https://ipfs.io/ipfs/${imageUpload.cid}`,
   };
 
-  const ipfsObj = await ipfsClient.add(JSON.stringify(jsonObj));
+  // Upload metadata to Pinata (public IPFS network)
+  const metadataUpload = await pinata.upload.public.json(jsonObj);
 
-  response.path = ipfsObj.path;
+  response.path = metadataUpload.cid;
 
   try {
     const message = EthCrypto.hash.keccak256([{ type: "string", value: response.path }]);

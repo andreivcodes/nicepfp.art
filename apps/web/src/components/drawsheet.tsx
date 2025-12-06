@@ -51,12 +51,14 @@ const MintButton = () => {
   const writeContract = useWriteContract();
   const [loading, setLoading] = useState(false);
 
+  const { isError, isSuccess, isIdle, writeContract: doWriteContract } = writeContract;
+
   useEffect(() => {
-    if (writeContract.isError || writeContract.isSuccess) setLoading(false);
-    if (data && ipfsData && ipfsData.path && writeContract.isIdle && !writeContract.isError) {
-      writeContract.writeContract(data.request);
+    if (isError || isSuccess) setLoading(false);
+    if (data && ipfsData.path && isIdle && !isError) {
+      doWriteContract(data.request);
     }
-  }, [data, writeContract.isError, writeContract.isSuccess, ipfsData.signature, ipfsData.path]);
+  }, [data, isError, isSuccess, isIdle, ipfsData.path, doWriteContract]);
 
   useEffect(() => {
     if (chainId !== polygon.id && switchChain) {

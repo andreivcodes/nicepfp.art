@@ -11,8 +11,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
       - NEXT_PUBLIC_HOST=${NEXT_PUBLIC_HOST:-http://localhost:3000}
-      - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
-      - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
+      - PINATA_API_JWT=${PINATA_API_JWT}
       - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
       postgres:
@@ -35,8 +34,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
-      - IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
-      - IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
+      - PINATA_API_JWT=${PINATA_API_JWT}
       - BROWSERLESS_URL=http://browserless:3000
       - BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
     depends_on:

@@ -3,7 +3,7 @@ import { config as dotenv_config } from "dotenv";
 import puppeteer, { Browser, Page } from "puppeteer";
 import EthCrypto from "eth-crypto";
 import { db } from "@nicepfp/database";
-import { create } from "ipfs-http-client";
+import { PinataSDK } from "pinata";
 import express from "express";
 
 dotenv_config();
@@ -15,17 +15,9 @@ const BROWSERLESS_RETRY_DELAY = 1000;
 
 // Initialize services
 const redis = new Redis(process.env.REDIS_URL!);
-const ipfsClient = create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    authorization:
-      "Basic " +
-      Buffer.from(
-        process.env.IPFS_PROJECT_ID + ":" + process.env.IPFS_PROJECT_SECRET,
-      ).toString("base64"),
-  },
+const pinata = new PinataSDK({
+  pinataJwt: process.env.PINATA_API_JWT!,
+  pinataGateway: "gateway.pinata.cloud",
 });
 
 // Healthcheck server
@@ -132,26 +124,31 @@ async function generateImage(): Promise<void> {
       data.replace(/^data:image\/\w+;base64,/, ""),
       "base64",
     );
-    const imageIPFS = await ipfsClient.add(imageBuffer);
 
-    if (imageIPFS.path === DEFAULT_IPFS_HASH) {
+    // Upload image to Pinata (public IPFS network)
+    const imageBlob = new Blob([imageBuffer], { type: "image/png" });
+    const imageFile = new File([imageBlob], "image.png", { type: "image/png" });
+    const imageUpload = await pinata.upload.public.file(imageFile);
+
+    if (imageUpload.cid === DEFAULT_IPFS_HASH) {
       console.log("Skipping default IPFS hash");
       return;
     }
 
-    console.log(`Image uploaded to IPFS: ${imageIPFS.path}`);
+    console.log(`Image uploaded to Pinata: ${imageUpload.cid}`);
 
     const jsonObj = {
       name: "nicepfp",
       description: "A very nice pfp created using nicepfp.art",
-      image: `https://ipfs.io/ipfs/${imageIPFS.path}`,
+      image: `https://ipfs.io/ipfs/${imageUpload.cid}`,
     };
 
-    const objIPFS = await ipfsClient.add(JSON.stringify(jsonObj));
-    console.log(`Metadata uploaded to IPFS: ${objIPFS.path}`);
+    // Upload metadata to Pinata (public IPFS network)
+    const metadataUpload = await pinata.upload.public.json(jsonObj);
+    console.log(`Metadata uploaded to Pinata: ${metadataUpload.cid}`);
 
     const message = EthCrypto.hash.keccak256([
-      { type: "string", value: objIPFS.path },
+      { type: "string", value: metadataUpload.cid },
     ]);
     // Remove 0x prefix if present for eth-crypto
     const privateKey = process.env.PRIVATE_KEY!;
@@ -161,14 +158,14 @@ async function generateImage(): Promise<void> {
     await db
       .insertInto("entries")
       .values({
-        ipfsImage: `https://ipfs.io/ipfs/${imageIPFS.path}`,
-        ipfsNFT: objIPFS.path,
+        ipfsImage: `https://ipfs.io/ipfs/${imageUpload.cid}`,
+        ipfsNFT: metadataUpload.cid,
         signature,
         locked: false,
       })
       .execute();
 
-    console.log(`Entry created in database: ${objIPFS.path}`);
+    console.log(`Entry created in database: ${metadataUpload.cid}`);
   } catch (error) {
     console.error("Error during image generation:", error);
     throw error;
