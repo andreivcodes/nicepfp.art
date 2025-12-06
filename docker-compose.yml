@@ -5,8 +5,6 @@ services:
       dockerfile: apps/web/Dockerfile
       platforms:
         - "linux/amd64"
-    ports:
-      - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
