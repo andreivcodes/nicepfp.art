@@ -29,22 +29,26 @@ RUN pnpm build --filter=@nicepfp/mint
 RUN pnpm deploy --filter=@nicepfp/mint --prod /app/deploy
 
 FROM node:20-alpine AS runner
-WORKDIR /app
 
 # Only runtime dependencies needed
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat dumb-init
 
-# Copy the deployed bundle (self-contained, no symlinks)
-COPY --from=builder /app/deploy ./
+WORKDIR /app
 
-# Copy built application
-COPY --from=builder /app/apps/mint/dist ./dist
-
-# Create non-root user for security
+# Create non-root user for security BEFORE copying files
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
+    adduser --system --uid 1001 --home /app nodejs
+
+# Copy the deployed bundle with proper ownership
+COPY --from=builder --chown=nodejs:nodejs /app/deploy ./
+
+# Copy built application with proper ownership
+COPY --from=builder --chown=nodejs:nodejs /app/apps/mint/dist ./dist
+
+# Switch to non-root user
 USER nodejs
 
+ENV NODE_ENV=production
 ENV PORT=3000
 
-CMD ["node", "dist/index.js"]
+CMD ["dumb-init", "node", "dist/index.js"]

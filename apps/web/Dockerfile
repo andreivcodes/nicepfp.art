@@ -28,21 +28,26 @@ RUN pnpm build --filter=@nicepfp/web
 FROM node:20-alpine AS runner
 
 # Only runtime dependencies needed
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat dumb-init
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 --home /app nextjs
 
+# Copy files with proper ownership
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/next.config.mjs .
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/package.json .
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
+# Switch to non-root user
+USER nextjs
+
+ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "apps/web/server.js"]
+CMD ["dumb-init", "node", "apps/web/server.js"]
