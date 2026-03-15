@@ -5,7 +5,7 @@ WORKDIR /app
 # Install system dependencies and setup pnpm
 RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev && \
     corepack enable && \
-    corepack prepare pnpm@10.15.0 --activate
+    corepack prepare pnpm@10.24.0 --activate
 
 # Copy workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
@@ -13,7 +13,7 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/database ./packages/database/
 
 # Install dependencies (only web and its dependencies)
-RUN pnpm install --filter @nicepfp/web...
+RUN pnpm install --frozen-lockfile --filter @nicepfp/web...
 
 # Build the database package first
 RUN pnpm --filter @nicepfp/database build
@@ -23,7 +23,7 @@ COPY apps/web ./apps/web
 COPY tsconfig.json ./
 
 # Build
-RUN pnpm build --filter=@nicepfp/web
+RUN pnpm --filter @nicepfp/web build
 
 FROM node:20-alpine AS runner
 

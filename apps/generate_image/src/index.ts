@@ -12,6 +12,8 @@ dotenv_config();
 const DEFAULT_IPFS_HASH = "QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH";
 const BROWSERLESS_RETRIES = 3;
 const BROWSERLESS_RETRY_DELAY = 1000;
+const HEALTHCHECK_PORT = Number(process.env.PORT ?? 3000);
+const DEFAULT_WEB_URL = "http://localhost:3000";
 
 // Initialize services
 const redis = new Redis(process.env.REDIS_URL!);
@@ -25,8 +27,8 @@ const app = express();
 app.get("/", (_req, res) => {
   res.send("OK");
 });
-app.listen(3000, () =>
-  console.log(`Healthcheck running at http://localhost:3000`),
+app.listen(HEALTHCHECK_PORT, () =>
+  console.log(`Healthcheck running on port ${HEALTHCHECK_PORT}`),
 );
 
 // Redis subscription
@@ -53,19 +55,23 @@ async function connectToBrowserless(): Promise<Browser> {
     throw new Error("Browserless URL or token not configured");
   }
 
-  const url = `${browserlessUrl}/?token=${browserlessToken}&launch=${JSON.stringify(
-    {
+  const endpoint = new URL(browserlessUrl);
+  if (endpoint.protocol === "http:") endpoint.protocol = "ws:";
+  if (endpoint.protocol === "https:") endpoint.protocol = "wss:";
+  endpoint.searchParams.set("token", browserlessToken);
+  endpoint.searchParams.set(
+    "launch",
+    JSON.stringify({
       args: ["--no-sandbox"],
       headless: true,
-    },
-  )}`;
+    }),
+  );
 
-  console.log("Connecting to browserless service...");
-  console.log(`Using URL: ${url}`); // Log the URL being used
+  console.log(`Connecting to browserless service at ${endpoint.origin}...`);
 
   try {
     const browser = await puppeteer.connect({
-      browserWSEndpoint: url,
+      browserWSEndpoint: endpoint.toString(),
       defaultViewport: null,
     });
 
@@ -106,7 +112,11 @@ async function generateImage(): Promise<void> {
   try {
     browser = await connectWithRetry();
     page = await browser.newPage();
-    await page.goto("https://nicepfp.art/frame/img", {
+    const webUrl =
+      process.env.WEB_URL ?? process.env.NEXT_PUBLIC_HOST ?? DEFAULT_WEB_URL;
+    const frameUrl = new URL("/frame/img", webUrl).toString();
+
+    await page.goto(frameUrl, {
       waitUntil: "networkidle0",
     });
     await page.waitForSelector("#defaultCanvas0", { timeout: 60000 });

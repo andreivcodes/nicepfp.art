@@ -10,6 +10,7 @@ dotenv_config();
 
 // Constants
 const CONTRACT_ADDRESS = "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34";
+const HEALTHCHECK_PORT = Number(process.env.PORT ?? 3000);
 
 // Initialize services
 const redis = new Redis(process.env.REDIS_URL!);
@@ -19,8 +20,8 @@ const app = express();
 app.get("/", (_req, res) => {
   res.send("OK");
 });
-app.listen(3000, () =>
-  console.log(`Healthcheck running at http://localhost:3000`),
+app.listen(HEALTHCHECK_PORT, () =>
+  console.log(`Healthcheck running on port ${HEALTHCHECK_PORT}`),
 );
 
 // Redis subscription

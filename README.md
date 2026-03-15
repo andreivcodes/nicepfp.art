@@ -19,7 +19,7 @@ nicepfp.art is a Web3 application that uses machine learning to generate unique 
 ### Prerequisites
 
 - Node.js 20+
-- Yarn 4.6.0+
+- pnpm 10+
 - Docker & Docker Compose
 - PostgreSQL 15
 - Redis
@@ -34,7 +34,7 @@ cd nicepfp.art
 
 2. Install dependencies:
 ```bash
-yarn install
+pnpm install
 ```
 
 3. Set up environment variables:
@@ -44,17 +44,17 @@ yarn install
 
 4. Start infrastructure services:
 ```bash
-docker-compose up -d postgres redis browserless
+docker compose up -d postgres redis browserless
 ```
 
 5. Run database migrations:
 ```bash
-yarn prisma:migrate:dev
+pnpm db:migrate:latest
 ```
 
 6. Start development:
 ```bash
-yarn dev
+pnpm dev
 ```
 
 Visit http://localhost:3000 to see the application.
@@ -111,9 +111,17 @@ yarn build                  # Build all services
 
 ### Docker Stack
 
+`docker-compose.yml` publishes these host ports by default:
+
+- Web app: `http://localhost:3000`
+- Browserless: `ws://localhost:3001`
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+
 ```bash
-docker-compose up           # Start all services
-docker-compose up web       # Start specific service
+docker compose up           # Start all services
+docker compose up web       # Start specific service
+docker compose up -d postgres redis browserless
 ```
 
 ## Environment Variables
@@ -131,11 +139,10 @@ NEXT_PUBLIC_HOST=http://localhost:3000
 ```
 DATABASE_URL=postgresql://user:password@localhost:5432/nicepfp
 REDIS_URL=redis://localhost:6379
-IPFS_PROJECT_ID=your_infura_project_id
-IPFS_PROJECT_SECRET=your_infura_secret
-BROWSERLESS_URL=ws://localhost:3000
+BROWSERLESS_URL=ws://localhost:3001
 BROWSERLESS_TOKEN=your_token
 PRIVATE_KEY=your_ethereum_private_key
+WEB_URL=http://localhost:3000
 ```
 
 ### Mint Service (.env)

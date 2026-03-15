@@ -5,7 +5,9 @@ WORKDIR /app
 # Install system dependencies and setup pnpm
 RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev && \
     corepack enable && \
-    corepack prepare pnpm@10.15.0 --activate
+    corepack prepare pnpm@10.24.0 --activate
+
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Copy workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
@@ -13,7 +15,7 @@ COPY apps/generate_image/package.json ./apps/generate_image/
 COPY packages/database ./packages/database/
 
 # Install dependencies (only generate_image and its dependencies)
-RUN pnpm install --filter @nicepfp/gen-img...
+RUN pnpm install --frozen-lockfile --filter @nicepfp/gen-img...
 
 # Build the database package first
 RUN pnpm --filter @nicepfp/database build
@@ -23,15 +25,15 @@ COPY apps/generate_image ./apps/generate_image
 COPY tsconfig.json ./
 
 # Build the app
-RUN pnpm build --filter=@nicepfp/gen-img
+RUN pnpm --filter @nicepfp/gen-img build
 
 # Deploy creates a standalone bundle with no symlinks
-RUN pnpm deploy --filter=@nicepfp/gen-img --prod /app/deploy
+RUN pnpm --filter @nicepfp/gen-img --prod deploy /app/deploy
 
 FROM node:20-alpine AS runner
 
-# Only runtime dependencies needed (chromium for Puppeteer)
-RUN apk add --no-cache libc6-compat dumb-init chromium
+# Only runtime dependencies needed
+RUN apk add --no-cache libc6-compat dumb-init
 
 WORKDIR /app
 
@@ -50,7 +52,6 @@ USER nodejs
 
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 CMD ["dumb-init", "node", "dist/index.js"]

@@ -5,7 +5,7 @@ WORKDIR /app
 # Install system dependencies and setup pnpm
 RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev && \
     corepack enable && \
-    corepack prepare pnpm@10.15.0 --activate
+    corepack prepare pnpm@10.24.0 --activate
 
 # Copy workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
@@ -13,7 +13,7 @@ COPY apps/mint/package.json ./apps/mint/
 COPY packages/database ./packages/database/
 
 # Install dependencies (only mint and its dependencies)
-RUN pnpm install --filter @nicepfp/mint...
+RUN pnpm install --frozen-lockfile --filter @nicepfp/mint...
 
 # Build the database package first
 RUN pnpm --filter @nicepfp/database build
@@ -23,10 +23,10 @@ COPY apps/mint ./apps/mint
 COPY tsconfig.json ./
 
 # Build the app
-RUN pnpm build --filter=@nicepfp/mint
+RUN pnpm --filter @nicepfp/mint build
 
 # Deploy creates a standalone bundle with no symlinks
-RUN pnpm deploy --filter=@nicepfp/mint --prod /app/deploy
+RUN pnpm --filter @nicepfp/mint --prod deploy /app/deploy
 
 FROM node:20-alpine AS runner
 
