@@ -44,7 +44,7 @@ pnpm install
 
 4. Start infrastructure services:
 ```bash
-docker compose up -d postgres redis browserless
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis browserless
 ```
 
 5. Run database migrations:
@@ -111,7 +111,7 @@ yarn build                  # Build all services
 
 ### Docker Stack
 
-`docker-compose.yml` publishes these host ports by default:
+`docker-compose.dev.yml` publishes these host ports for local development:
 
 - Web app: `http://localhost:3000`
 - Browserless: `ws://localhost:3001`
@@ -119,9 +119,9 @@ yarn build                  # Build all services
 - Redis: `localhost:6379`
 
 ```bash
-docker compose up           # Start all services
-docker compose up web       # Start specific service
-docker compose up -d postgres redis browserless
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up web
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis browserless
 ```
 
 ## Environment Variables

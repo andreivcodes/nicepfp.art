@@ -5,8 +5,8 @@ services:
       dockerfile: apps/web/Dockerfile
       platforms:
         - "linux/amd64"
-    ports:
-      - "${WEB_PORT:-3000}:3000"
+    expose:
+      - "3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -30,6 +30,8 @@ services:
       dockerfile: apps/generate_image/Dockerfile
       platforms:
         - "linux/amd64"
+    expose:
+      - "3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -59,6 +61,8 @@ services:
       dockerfile: apps/mint/Dockerfile
       platforms:
         - "linux/amd64"
+    expose:
+      - "3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
@@ -88,8 +92,8 @@ services:
 
   redis:
     image: redis:alpine
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
+    expose:
+      - "6379"
     volumes:
       - redis-data:/data
     networks:
@@ -103,8 +107,8 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+    expose:
+      - "5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
@@ -126,8 +130,8 @@ services:
 
   browserless:
     image: ghcr.io/browserless/chromium:v2.23.0
-    ports:
-      - "${BROWSERLESS_PORT:-3001}:3000"
+    expose:
+      - "3000"
     environment:
       TOKEN: ${BROWSERLESS_TOKEN}
     restart: unless-stopped

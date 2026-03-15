@@ -1,0 +1,16 @@
+services:
+  web:
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+  redis:
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+  postgres:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  browserless:
+    ports:
+      - "${BROWSERLESS_PORT:-3001}:3000"
