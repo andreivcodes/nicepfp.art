@@ -20,9 +20,17 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 5 -O /dev/null http://127.0.0.1:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
       - nicepfp-network
     restart: unless-stopped
+    labels:
+      - traefik.http.services.http-0-o337y6edj3hvclcpzdombee2-web.loadbalancer.server.port=3000
 
   generate-image:
     build:
