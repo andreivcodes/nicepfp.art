@@ -138,7 +138,7 @@ services:
     restart: unless-stopped
 
   browserless:
-    image: ghcr.io/browserless/chromium:v2.23.0
+    image: ghcr.io/browserless/chromium:v2.57.2
     expose:
       - "3000"
     environment:
