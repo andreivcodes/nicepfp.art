@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN pnpm --filter @nicepfp/gen-img build
 # Deploy creates a standalone bundle with no symlinks
 RUN pnpm --filter @nicepfp/gen-img --prod deploy /app/deploy
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 # Only runtime dependencies needed
 RUN apk add --no-cache libc6-compat dumb-init

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ COPY tsconfig.json ./
 # Build
 RUN pnpm --filter @nicepfp/web build
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 # Only runtime dependencies needed
 RUN apk add --no-cache libc6-compat dumb-init
