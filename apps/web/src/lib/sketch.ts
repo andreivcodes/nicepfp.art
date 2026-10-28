@@ -36,6 +36,8 @@ export const setup = (_p5, canvasParentRef) => {
 
 // Reset the drawing
 export const startDrawing = () => {
+  // generate_image waits for data-sketch="done" before capturing the canvas.
+  document.body.dataset.sketch = "drawing";
   p5.background(255);
   x = p5.width / 2;
   y = p5.height / 3;
@@ -68,6 +70,8 @@ export const draw = () => {
     if (strokePath.pen !== "end") {
       strokePath = null;
       model.generate(gotStroke);
+    } else {
+      document.body.dataset.sketch = "done";
     }
   }
 };
