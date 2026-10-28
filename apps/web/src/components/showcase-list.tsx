@@ -39,9 +39,7 @@ export const ShowcaseList = () => {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {Array.from({ length: supply }, (_, id) => (
-              <div key={id} className="p-2">
-                <ShowcaseItem id={id} />
-              </div>
+              <ShowcaseItem key={id} id={id} />
             ))}
           </div>
         </CardContent>

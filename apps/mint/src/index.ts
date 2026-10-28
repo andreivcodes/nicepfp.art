@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 import { config as dotenv_config } from "dotenv";
 import { db } from "@nicepfp/database";
-import { createWalletClient, http } from "viem";
+import { createWalletClient, fallback, http } from "viem";
 import { polygon } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import express from "express";
@@ -11,6 +11,15 @@ dotenv_config();
 // Constants
 const CONTRACT_ADDRESS = "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34";
 const HEALTHCHECK_PORT = Number(process.env.PORT ?? 3000);
+// viem's default Polygon RPC (polygon-rpc.com) rejects unauthenticated
+// requests, so mints would fail at broadcast. POLYGON_RPC_URL (e.g. a keyed
+// provider) is tried first, then public endpoints.
+const POLYGON_RPC_URLS = [
+  process.env.POLYGON_RPC_URL?.trim(),
+  "https://polygon-bor-rpc.publicnode.com",
+  "https://polygon.drpc.org",
+  "https://1rpc.io/matic",
+].filter((url): url is string => Boolean(url));
 
 // Initialize services
 const redis = new Redis(process.env.REDIS_URL!);
@@ -74,7 +83,7 @@ async function mintNFT(address: string, entryId: string): Promise<void> {
   const walletClient = createWalletClient({
     account,
     chain: polygon,
-    transport: http(),
+    transport: fallback(POLYGON_RPC_URLS.map((url) => http(url))),
   });
 
   console.log(`Minting NFT for ${address} with IPFS hash ${entry.ipfsNFT}`);

@@ -81,6 +81,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-nicepfp}
       - REDIS_URL=redis://redis:6379
       - PRIVATE_KEY=${PRIVATE_KEY}
+      - POLYGON_RPC_URL=${POLYGON_RPC_URL:-}
     depends_on:
       postgres:
         condition: service_healthy
