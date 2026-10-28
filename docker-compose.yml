@@ -150,11 +150,17 @@ services:
     restart: unless-stopped
 
   browserless:
-    image: ghcr.io/browserless/chromium:v2.57.2
+    image: ghcr.io/browserless/chromium:v2.57.3
     expose:
       - "3000"
     environment:
       TOKEN: ${BROWSERLESS_TOKEN}
+      # browserless logs at debug level by default, and its debug lines dump
+      # each Chrome launch's full environment. Coolify gives every service the
+      # whole .env, so that leaked BROWSERLESS_TOKEN and POSTGRES_PASSWORD (and
+      # would leak PRIVATE_KEY / PINATA_API_JWT) into the container logs on
+      # every image generation. Keep info/warn/error only.
+      DEBUG: "browserless*,-**:verbose,-**:debug,-**:trace"
     restart: unless-stopped
     healthcheck:
       test:
