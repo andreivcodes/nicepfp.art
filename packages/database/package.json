@@ -20,7 +20,7 @@
     "migrate:make": "kysely migrate:make"
   },
   "dependencies": {
-    "kysely": "^0.28.8",
+    "kysely": "^0.28.18",
     "kysely-ctl": "^0.19.0",
     "pg": "^8.16.3",
     "typescript": "^5.9.3"
