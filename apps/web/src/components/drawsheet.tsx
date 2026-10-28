@@ -37,21 +37,34 @@ export default function Container() {
   );
 }
 
+// viem/wagmi errors carry a one-line shortMessage; message can be a long dump.
+const errorText = (e: unknown, fallback: string) =>
+  (e as { shortMessage?: string } | null)?.shortMessage || (e instanceof Error && e.message) || fallback;
+
 const MintButton = () => {
   const [ipfsData, setIpfsData] = useState({ path: "", signature: "" });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { address, isConnected, chainId } = useAccount();
   const { connect, connectors, error } = useConnect();
   const { switchChain } = useSwitchChain();
-  const { data } = useSimulateContract({
+  const { data, error: simulateError } = useSimulateContract({
     address: "0xf8C0f5B3e082343520bDe88d17Fa09E0aeAbEc34",
     abi: contractJson.abi,
     functionName: "safeMint",
     args: [address, ipfsData.path, ipfsData.signature],
+    query: { enabled: Boolean(address && ipfsData.path && ipfsData.signature) },
   });
   const writeContract = useWriteContract();
   const [loading, setLoading] = useState(false);
 
-  const { isError, isSuccess, isIdle, writeContract: doWriteContract } = writeContract;
+  const {
+    isError,
+    isSuccess,
+    isIdle,
+    error: writeError,
+    writeContract: doWriteContract,
+    reset: resetWrite,
+  } = writeContract;
 
   useEffect(() => {
     if (isError || isSuccess) setLoading(false);
@@ -59,6 +72,18 @@ const MintButton = () => {
       doWriteContract(data.request);
     }
   }, [data, isError, isSuccess, isIdle, ipfsData.path, doWriteContract]);
+
+  // The mint would revert (e.g. bad signature): stop waiting and say so.
+  useEffect(() => {
+    if (ipfsData.path && simulateError) {
+      setLoading(false);
+      setErrorMessage(errorText(simulateError, "Minting failed. Please try again."));
+    }
+  }, [ipfsData.path, simulateError]);
+
+  useEffect(() => {
+    if (writeError) setErrorMessage(errorText(writeError, "Transaction failed. Please try again."));
+  }, [writeError]);
 
   useEffect(() => {
     if (chainId !== polygon.id && switchChain) {
@@ -70,16 +95,26 @@ const MintButton = () => {
     console.log(ipfsData);
   }, [ipfsData]);
 
-  const handleMintButtonClick = () => {
+  const handleMintButtonClick = async () => {
     setLoading(true);
+    setErrorMessage(null);
+    // Start from a clean slate so a previous attempt can't be resubmitted.
+    setIpfsData({ path: "", signature: "" });
+    resetWrite();
 
-    const run = async (img: string) => {
-      let data = await getIpfs(img);
-      setIpfsData(data);
-    };
-
-    const image = captureFrame();
-    run(image);
+    try {
+      const result = await getIpfs(captureFrame());
+      if (!result.ok) {
+        setErrorMessage(result.error);
+        setLoading(false);
+        return;
+      }
+      setIpfsData({ path: result.path, signature: result.signature });
+    } catch (e) {
+      console.error(e);
+      setErrorMessage("Something went wrong while preparing your mint. Please try again.");
+      setLoading(false);
+    }
   };
 
   if (!isConnected)
@@ -107,12 +142,19 @@ const MintButton = () => {
     );
 
   return (
-    <button
-      className="w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700"
-      disabled={loading}
-      onClick={handleMintButtonClick}
-    >
-      {loading ? "Loading..." : "Mint"}
-    </button>
+    <div className="flex w-full flex-col gap-2">
+      <button
+        className="w-full rounded bg-purple-500 py-2 font-bold text-white hover:bg-purple-700"
+        disabled={loading}
+        onClick={handleMintButtonClick}
+      >
+        {loading ? "Loading..." : "Mint"}
+      </button>
+      {errorMessage && (
+        <div role="alert" className="text-sm text-red-600">
+          {errorMessage}
+        </div>
+      )}
+    </div>
   );
 };
