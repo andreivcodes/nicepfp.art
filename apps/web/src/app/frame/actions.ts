@@ -1,6 +1,6 @@
 "use server";
 
-import { db, redis } from "@/lib/db";
+import { db, getRedis } from "@/lib/db";
 import { sql } from "@nicepfp/database";
 
 export const mint = async (address: string, id: string) => {
@@ -11,7 +11,7 @@ export const mint = async (address: string, id: string) => {
     entryId: id,
   };
 
-  await redis.publish("mint", JSON.stringify(message));
+  await getRedis().publish("mint", JSON.stringify(message));
 };
 
 export const hasMinted = async (address: string) => {
@@ -34,7 +34,7 @@ export const getImage = async () => {
 
   if (entries.length < 100) {
     for (let i = 0; i < 10; i++) {
-      await redis.publish("gen-img", "make me a photo");
+      await getRedis().publish("gen-img", "make me a photo");
     }
     console.log(`Requested generation of 10 photos.`);
   }

@@ -3,16 +3,15 @@ import Redis from "ioredis";
 // Re-export db from shared package
 export { db } from "@nicepfp/database";
 
-const redisClientSingleton = () => {
-  return new Redis(process.env.REDIS_URL!);
-};
-
 declare global {
-  var redis: undefined | ReturnType<typeof redisClientSingleton>;
+  var redis: undefined | Redis;
 }
 
-const redis = globalThis.redis ?? redisClientSingleton();
-
-export { redis };
-
-if (process.env.NODE_ENV !== "production") globalThis.redis = redis;
+// Create the client on first use rather than at import time, so that
+// `next build` (which evaluates server modules) doesn't try to connect.
+export const getRedis = (): Redis => {
+  if (!globalThis.redis) {
+    globalThis.redis = new Redis(process.env.REDIS_URL!);
+  }
+  return globalThis.redis;
+};

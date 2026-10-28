@@ -15,14 +15,13 @@ const nextConfig = {
     return config;
   },
   images: {
+    // Only the IPFS gateway used by the showcase (token images). Anything
+    // broader turns /_next/image into an open image proxy.
     remotePatterns: [
       {
-        hostname: "*",
-        protocol: "http",
-      },
-      {
-        hostname: "*",
         protocol: "https",
+        hostname: "ipfs.io",
+        pathname: "/ipfs/**",
       },
     ],
   },
