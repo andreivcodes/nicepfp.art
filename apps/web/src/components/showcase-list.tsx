@@ -6,6 +6,11 @@ import contractJson from "../abi/nicepfp.json";
 import { ShowcaseItem } from "./showcase-item";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
+// The public IPFS gateways (ipfs.io, dweb.link, Pinata's shared gateway) no
+// longer serve this collection's metadata to browsers, so each tile's two
+// requests only fail. Render the tiles only when a dedicated gateway is set.
+const SHOW_TOKEN_IMAGES = Boolean(process.env.NEXT_PUBLIC_IPFS_GATEWAY);
+
 export const ShowcaseList = () => {
   const [supply, setSupply] = useState(0);
 
@@ -36,13 +41,15 @@ export const ShowcaseList = () => {
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            {Array.from({ length: supply }, (_, id) => (
-              <ShowcaseItem key={id} id={id} />
-            ))}
-          </div>
-        </CardContent>
+        {SHOW_TOKEN_IMAGES && (
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {Array.from({ length: supply }, (_, id) => (
+                <ShowcaseItem key={id} id={id} />
+              ))}
+            </div>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
