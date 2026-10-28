@@ -63,6 +63,28 @@ export default async function Home({ searchParams }: PageProps) {
     );
   }
 
+  // The fid, button and recast flag are decoded from the client-supplied
+  // message bytes; only isValid says a hub verified the signature. Without it
+  // anyone could post a forged message for any fid and have the mint worker
+  // mint (and pay gas) on their behalf.
+  if (!frameMessage?.isValid) {
+    return (
+      <FrameContainer
+        pathname={`${process.env.NEXT_PUBLIC_HOST}/frame`}
+        postUrl={`${process.env.NEXT_PUBLIC_HOST}/frame/post`}
+        state={state}
+        previousFrame={previousFrame}
+      >
+        <FrameImage>
+          <div tw="w-full h-full bg-white text-black justify-center items-center flex">
+            Couldn&apos;t verify this request, please try again.
+          </div>
+        </FrameImage>
+        <FrameButton>Try again</FrameButton>
+      </FrameContainer>
+    );
+  }
+
   const address = await getAddressForFid({
     fid: frameMessage?.requesterFid ?? 1,
     options: { fallbackToCustodyAddress: true },
